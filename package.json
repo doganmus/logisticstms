@@ -1,0 +1,40 @@
+{
+  "name": "logistics-tms",
+  "version": "0.1.0",
+  "description": "Logistics TMS - Multi-tenant SaaS Platform",
+  "private": true,
+  "scripts": {
+    "setup:env": "node scripts/setup-env.js",
+    "setup:env:force": "node scripts/setup-env.js --force",
+    "setup:env:dry-run": "node scripts/setup-env.js --dry-run",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "docker:up": "docker-compose up",
+    "docker:up:build": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "lint": "cd backend && npm run lint && cd ../frontend && npm run lint",
+    "test": "cd backend && npm test",
+    "test:e2e": "cd backend && npm run test:e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/LogisticsTMS.git"
+  },
+  "keywords": [
+    "logistics",
+    "tms",
+    "saas",
+    "multi-tenant",
+    "nestjs",
+    "nextjs"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
+

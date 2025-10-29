@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:14-alpine
+    container_name: tms-database
+    environment:
+      POSTGRES_USER: tmsuser
+      POSTGRES_PASSWORD: tmspassword
+      POSTGRES_DB: tmsdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tms-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USERNAME: tmsuser
+      DB_PASSWORD: tmspassword
+      DB_DATABASE: tmsdb
+      NODE_ENV: development
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tms-webapp
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
