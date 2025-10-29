@@ -58,7 +58,9 @@ export class TenantConnectionService {
     if (!this.queryRunner) {
       this.queryRunner = this.tenantDataSource.createQueryRunner();
       await this.queryRunner.connect();
-      await this.queryRunner.query(`SET search_path TO "${this.tenantId}"`);
+      await this.queryRunner.query(
+        `SET search_path TO "${this.tenantId}", public`,
+      );
       this.registerReleaseHook();
     }
 
@@ -114,7 +116,14 @@ export class TenantConnectionService {
     try {
       await runner.connect();
       await runner.query(`CREATE SCHEMA IF NOT EXISTS "${tenantId}"`);
-      await runner.query(`SET search_path TO "${tenantId}"`);
+      await runner.query(`SET search_path TO "${tenantId}", public`);
+      await runner.query(`
+        CREATE TABLE IF NOT EXISTS "migrations" (
+          "id" SERIAL PRIMARY KEY,
+          "timestamp" BIGINT NOT NULL,
+          "name" character varying NOT NULL
+        )
+      `);
 
       const migrationExecutor = new MigrationExecutor(
         this.tenantDataSource,

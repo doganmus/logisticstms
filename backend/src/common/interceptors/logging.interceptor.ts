@@ -2,9 +2,9 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  LoggerService,
   NestInterceptor,
 } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { Request } from 'express';
 

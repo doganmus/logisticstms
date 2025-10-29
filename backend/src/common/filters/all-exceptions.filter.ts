@@ -4,8 +4,8 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  LoggerService,
 } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 interface ErrorResponseBody {
@@ -45,9 +45,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
           : 'Internal server error',
     };
 
+    const { message, ...rest } = errorBody;
+
     this.logger.error({
       message: 'Unhandled exception',
-      ...errorBody,
+      errorMessage: message,
+      ...rest,
       tenantId: (request as any)?.tenantId,
       userId: (request as any)?.userId,
       stack:
