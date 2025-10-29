@@ -192,15 +192,7 @@ async createTenantSchema(tenantId: string): Promise<void> {
 - `tenantSchemaExists` ve `dropTenantSchema` yardımcıları bakım ve test senaryoları için schema yönetimini kolaylaştırır.
 
 
-### 6.3 Indexleme Stratejisi
-
-- `orders` tablosunda `status` ve `createdAt` alanları için B-Tree index'leri mevcut; durum bazlı filtreler ve tarih aralıkları hızlanır.
-- `vehicles` tablosunda `supplierId` için index oluşturuldu, tedarikçi bazlı filtreler optimize edilir.
-- `public.user` tablosunda hem `tenantId` hem `email` alanlarında index'ler bulunur; login ve tenant bazlı sorgular hızlanır.
-- `public.tenant` tablosunda `schema` alanı unique index ile korunur, schema adlarının çakışması engellenir.
-- Yeni index ihtiyaçları migration dosyaları aracılığıyla yönetilir; `npm run migration:generate` ile değişiklikler izlenir.
-
-### 6.4 Error Handling
+### 6.3 Error Handling
 
 #### Mevcut Sorun
 - Global exception filter yok

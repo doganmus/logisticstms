@@ -1,77 +1,76 @@
-﻿# Proje Yol HaritasÄ± ve Abonelik PlanlarÄ±
+# Proje Yol Haritası ve Abonelik Planları
 
-Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
+Bu doküman, projenin ilerlemesini ve özellik setini takip eder.
 
-**GÃ¼ncel Proje Durumu:** MVP AÅŸamasÄ±nÄ±n %75-80'i tamamlanmÄ±ÅŸ  
-**Son GÃ¼ncelleme:** 28 Ekim 2025
-
----
-
-## ğŸ“Š Proje Ä°lerleme Ã–zeti
-
-### âœ… Tamamlanan AÅŸamalar
-- [x] Docker & Proje Ä°skeleti Kurulumu
-- [x] Ã‡oklu-KullanÄ±cÄ± (Multi-Tenant) Mimarisi (Temel)
-- [x] JWT TabanlÄ± Kimlik DoÄŸrulama
-- [x] Temel CRUD Ä°ÅŸlemleri (Orders, Vehicles, Drivers, Suppliers)
-- [x] Frontend Temel YapÄ±sÄ± ve UI BileÅŸenleri
-
-### ğŸš§ Devam Eden Ã‡alÄ±ÅŸmalar
-- [x] GÃ¼venlik SÄ±kÄ±laÅŸtÄ±rmasÄ± ve Validation âœ… (28 Ekim 2025)
-- [x] Multi-Tenant Mimarisi Ä°yileÅŸtirmeleri
-- [x] Error Handling ve Logging
-- [ ] DokÃ¼mantasyon GÃ¼ncellemeleri
+**Güncel Proje Durumu:** MVP Aşamasının %75-80'i tamamlanmış  
+**Son Güncelleme:** 28 Ekim 2025
 
 ---
 
-## ğŸ¯ AÅŸama 1: Stabilizasyon ve GÃ¼venlik (1-2 Hafta) - MEVCUT AÅAMA
+## 📊 Proje İlerleme Özeti
 
-### ğŸ”´ Kritik Ã–ncelikli GÃ¶revler
+### ✅ Tamamlanan Aşamalar
+- [x] Docker & Proje İskeleti Kurulumu
+- [x] Çoklu-Kullanıcı (Multi-Tenant) Mimarisi (Temel)
+- [x] JWT Tabanlı Kimlik Doğrulama
+- [x] Temel CRUD İşlemleri (Orders, Vehicles, Drivers, Suppliers)
+- [x] Frontend Temel Yapısı ve UI Bileşenleri
 
-#### GÃ¼venlik DÃ¼zeltmeleri
-- [x] Environment variables sistemi kurulumu âœ…
-  - [x] Backend `.env` dosyasÄ± oluÅŸturma
-  - [x] Frontend `.env.local` dosyasÄ± oluÅŸturma
+### 🚧 Devam Eden Çalışmalar
+- [x] Güvenlik Sıkılaştırması ve Validation ✅ (28 Ekim 2025)
+- [x] Multi-Tenant Mimarisi İyileştirmeleri ✅ (28 Ekim 2025)
+- [x] Error Handling ve Logging ✅ (28 Ekim 2025)
+- [ ] Dokümantasyon Güncellemeleri
+
+---
+
+## 🎯 Aşama 1: Stabilizasyon ve Güvenlik (1-2 Hafta) - MEVCUT AŞAMA
+
+### 🔴 Kritik Öncelikli Görevler
+
+#### Güvenlik Düzeltmeleri
+- [x] Environment variables sistemi kurulumu ✅
+  - [x] Backend `.env` dosyası oluşturma
+  - [x] Frontend `.env.local` dosyası oluşturma
   - [x] Docker-compose `.env` entegrasyonu
-  - [x] `.gitignore` gÃ¼ncelleme
+  - [x] `.gitignore` güncelleme
   - [x] Setup script (`npm run setup:env`)
-- [x] JWT validation dÃ¼zeltmesi âœ…
-  - [x] TenantMiddleware'de `verify()` kullanÄ±mÄ±
-  - [x] Token expiration kontrolÃ¼
-  - [ ] Refresh token mekanizmasÄ± (gelecek)
-- [x] DTO Validation ekleme âœ…
+- [x] JWT validation düzeltmesi ✅
+  - [x] TenantMiddleware'de `verify()` kullanımı
+  - [x] Token expiration kontrolü
+  - [ ] Refresh token mekanizması (gelecek)
+- [x] DTO Validation ekleme ✅
   - [x] `class-validator` paketleri kurulumu
-  - [x] TÃ¼m DTO'lara validation decorator'larÄ± ekleme
-  - [x] ValidationPipe global olarak aktifleÅŸtirme
-- [x] CORS yapÄ±landÄ±rmasÄ± âœ…
-  - [x] Allowed origins tanÄ±mlama (environment variable'dan)
-  - [x] Credentials ayarlarÄ±
-  - [x] Methods ve headers yapÄ±landÄ±rmasÄ±
-- [x] Rate limiting implementasyonu âœ…
+  - [x] Tüm DTO'lara validation decorator'ları ekleme
+  - [x] ValidationPipe global olarak aktifleştirme
+- [x] CORS yapılandırması ✅
+  - [x] Allowed origins tanımlama (environment variable'dan)
+  - [x] Credentials ayarları
+  - [x] Methods ve headers yapılandırması
+- [x] Rate limiting implementasyonu ✅
   - [x] `@nestjs/throttler` kurulumu
-  - [x] Global rate limiting ayarlarÄ±
-  - [x] Auth endpoint'leri iÃ§in Ã¶zel limitler (brute force Ã¶nleme)
+  - [x] Global rate limiting ayarları
+  - [x] Auth endpoint'leri için özel limitler (brute force önleme)
 
-#### Multi-Tenant DÃ¼zeltmeleri
-- [x] TypeORM connection yÃ¶netimi dÃ¼zeltme
-  - [x] Request-scoped injection doÄŸru implementasyonu
-  - [x] Connection pool yÃ¶netimi
+#### Multi-Tenant Düzeltmeleri
+- [x] TypeORM connection yönetimi düzeltme
+  - [x] Request-scoped injection doğru implementasyonu
+  - [x] Connection pool yönetimi
   - [x] Tenant schema otomatik migration
 - [x] Tenant isolation testleri
-  - [x] Cross-tenant data access Ã¶nleme
+  - [x] Cross-tenant data access önleme
   - [x] Schema switching validation
 
 #### Error Handling & Logging
 - [x] Global exception filter implementasyonu
-- [x] HTTP exception filter oluÅŸturma
-- [x] Structured logging sistemi (Winston tabanlÄ±)
+- [x] HTTP exception filter oluşturma
+- [x] Structured logging sistemi (Winston tabanlı)
 - [x] Frontend error boundary ekleme
-- [x] User-friendly error mesajlarÄ±
+- [x] User-friendly error mesajları
 - [x] Error notification sistemi (Snackbar/Toast)
 
-### ğŸŸ¡ YÃ¼ksek Ã–ncelikli GÃ¶revler
+### 🟡 Yüksek Öncelikli Görevler
 
-#### Database Ä°yileÅŸtirmeleri
 #### Database İyileştirmeleri
 - [x] TypeORM migrations sistemi kurulumu
   - [x] Migration script'leri oluşturma
@@ -80,45 +79,46 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
 - [x] `synchronize: false` yapılandırması (production için)
 - [x] Database indexleme stratejisi
 - [x] Connection pooling optimize etme
+
 #### API Documentation
 - [ ] Swagger/OpenAPI kurulumu
   - [ ] @nestjs/swagger paketi ekleme
-  - [ ] TÃ¼m endpoint'lere decorator'lar ekleme
-  - [ ] DTO'larÄ± dokÃ¼mante etme
-  - [ ] Authentication scheme tanÄ±mlama
+  - [ ] Tüm endpoint'lere decorator'lar ekleme
+  - [ ] DTO'ları dokümante etme
+  - [ ] Authentication scheme tanımlama
 - [ ] API versioning stratejisi
 
 ---
 
-## ğŸ¯ AÅŸama 2: MVP Tamamlama (2-3 Hafta)
+## 🎯 Aşama 2: MVP Tamamlama (2-3 Hafta)
 
 ### User Management & RBAC
-- [ ] User Management UI oluÅŸturma
-  - [ ] KullanÄ±cÄ± listesi sayfasÄ±
-  - [ ] KullanÄ±cÄ± ekleme formu
-  - [ ] KullanÄ±cÄ± dÃ¼zenleme sayfasÄ±
+- [ ] User Management UI oluşturma
+  - [ ] Kullanıcı listesi sayfası
+  - [ ] Kullanıcı ekleme formu
+  - [ ] Kullanıcı düzenleme sayfası
   - [ ] Rol atama interface'i
 - [ ] Role-Based Access Control (RBAC)
-  - [ ] Guards oluÅŸturma
+  - [ ] Guards oluşturma
   - [ ] Decorator'lar ekleme
   - [ ] Permission sistemi
-- [ ] Åifre sÄ±fÄ±rlama Ã¶zelliÄŸi
+- [ ] Şifre sıfırlama özelliği
   - [ ] "Forgot Password" flow
   - [ ] Email verification
   - [ ] Reset token sistemi
 
-### Form Validation & UX Ä°yileÅŸtirmeleri
+### Form Validation & UX İyileştirmeleri
 - [ ] Form validation (Frontend)
   - [ ] React Hook Form entegrasyonu
   - [ ] Yup/Zod schema validation
-  - [ ] Inline error mesajlarÄ±
-- [ ] Loading states iyileÅŸtirme
+  - [ ] Inline error mesajları
+- [ ] Loading states iyileştirme
   - [ ] Skeleton loaders
   - [ ] Progress indicators
   - [ ] Optimistic updates
 - [ ] Notification sistemi
   - [ ] Success/error snackbar'lar
-  - [ ] Confirmation dialog'larÄ±
+  - [ ] Confirmation dialog'ları
 - [ ] Responsive design testleri
   - [ ] Mobile view optimizasyonu
   - [ ] Tablet view testleri
@@ -139,8 +139,8 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Column sorting
   - [ ] Multi-column sort
 
-### Testing AltyapÄ±sÄ±
-- [ ] Unit test Ã¶rnekleri yazma
+### Testing Altyapısı
+- [ ] Unit test örnekleri yazma
   - [ ] Service test'leri
   - [ ] Controller test'leri
   - [ ] Utility function test'leri
@@ -154,29 +154,29 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
 
 ---
 
-## ğŸ¯ AÅŸama 3: Profesyonel Plan Ã–zellikleri (3-4 Hafta)
+## 🎯 Aşama 3: Profesyonel Plan Özellikleri (3-4 Hafta)
 
-### GerÃ§ek ZamanlÄ± Takip ModÃ¼lÃ¼
-- [ ] Backend GPS tracking altyapÄ±sÄ±
-  - [ ] Location entity oluÅŸturma
+### Gerçek Zamanlı Takip Modülü
+- [ ] Backend GPS tracking altyapısı
+  - [ ] Location entity oluşturma
   - [ ] Location tracking endpoints
   - [ ] WebSocket implementasyonu
 - [ ] Harita entegrasyonu
   - [ ] Google Maps / Mapbox entegrasyonu
-  - [ ] Real-time marker gÃ¼ncelleme
+  - [ ] Real-time marker güncelleme
   - [ ] Route visualization
 - [ ] Mobile app GPS integration
-  - [ ] Location permission yÃ¶netimi
+  - [ ] Location permission yönetimi
   - [ ] Background location tracking
   - [ ] Battery optimization
 
-### Belge YÃ¶netimi ModÃ¼lÃ¼
+### Belge Yönetimi Modülü
 - [ ] File upload sistemi
-  - [ ] Multer yapÄ±landÄ±rmasÄ±
+  - [ ] Multer yapılandırması
   - [ ] File validation (type, size)
   - [ ] S3/Cloud storage entegrasyonu
-- [ ] Document entity ve iliÅŸkileri
-  - [ ] Order-Document iliÅŸkisi
+- [ ] Document entity ve ilişkileri
+  - [ ] Order-Document ilişkisi
   - [ ] Document metadata
   - [ ] Version control
 - [ ] Document viewer/download UI
@@ -184,12 +184,12 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Download functionality
   - [ ] Bulk operations
 
-### MÃ¼ÅŸteri PortalÄ± ModÃ¼lÃ¼
+### Müşteri Portalı Modülü
 - [ ] Customer entity ve authentication
   - [ ] Separate customer authentication
-  - [ ] Customer-Order iliÅŸkisi
+  - [ ] Customer-Order ilişkisi
 - [ ] Customer portal UI
-  - [ ] Shipment tracking sayfasÄ±
+  - [ ] Shipment tracking sayfası
   - [ ] Order history
   - [ ] Document access
 - [ ] Notification sistemi
@@ -197,9 +197,9 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] SMS notifications (opsiyonel)
   - [ ] In-app notifications
 
-### Fatura ModÃ¼lÃ¼
-- [ ] Invoice entity oluÅŸturma
-  - [ ] Invoice-Order iliÅŸkisi
+### Fatura Modülü
+- [ ] Invoice entity oluşturma
+  - [ ] Invoice-Order ilişkisi
   - [ ] Payment status tracking
 - [ ] Invoice generation
   - [ ] PDF generation (PDFKit)
@@ -207,15 +207,15 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Tax calculations
 - [ ] Invoice management UI
   - [ ] Invoice listesi
-  - [ ] Invoice oluÅŸturma/dÃ¼zenleme
+  - [ ] Invoice oluşturma/düzenleme
   - [ ] Payment recording
 
 ---
 
-## ğŸ¯ AÅŸama 4: Production HazÄ±rlÄ±ÄŸÄ± (2 Hafta)
+## 🎯 Aşama 4: Production Hazırlığı (2 Hafta)
 
 ### DevOps & CI/CD
-- [ ] GitHub Actions workflow oluÅŸturma
+- [ ] GitHub Actions workflow oluşturma
   - [ ] Test pipeline
   - [ ] Build pipeline
   - [ ] Deployment pipeline
@@ -254,7 +254,7 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Image optimization
 - [ ] Security audit
   - [ ] Dependency scanning
-  - [ ] OWASP top 10 kontrolÃ¼
+  - [ ] OWASP top 10 kontrolü
   - [ ] Penetration testing
 - [ ] Load testing
   - [ ] Apache Bench / k6 testleri
@@ -266,17 +266,17 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Automated backups
   - [ ] Backup retention policy
   - [ ] Point-in-time recovery
-- [ ] Disaster recovery planÄ±
+- [ ] Disaster recovery planı
   - [ ] Recovery procedures
-  - [ ] RTO/RPO tanÄ±mlarÄ±
+  - [ ] RTO/RPO tanımları
   - [ ] Backup testing
 
 ---
 
-## ğŸ¯ AÅŸama 5: Kurumsal Plan Ã–zellikleri (4-6 Hafta)
+## 🎯 Aşama 5: Kurumsal Plan Özellikleri (4-6 Hafta)
 
-### Rota ve YÃ¼k Optimizasyonu ModÃ¼lÃ¼
-- [ ] Route optimization algoritmasÄ±
+### Rota ve Yük Optimizasyonu Modülü
+- [ ] Route optimization algoritması
   - [ ] Multi-stop route planning
   - [ ] Traffic consideration
   - [ ] Distance matrix API entegrasyonu
@@ -289,7 +289,7 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Manual adjustments
   - [ ] What-if scenarios
 
-### GeliÅŸmiÅŸ Analitik ve BI ModÃ¼lÃ¼
+### Gelişmiş Analitik ve BI Modülü
 - [ ] Analytics data model
   - [ ] Fact ve dimension tables
   - [ ] Aggregation queries
@@ -307,20 +307,20 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] PDF reports
   - [ ] Scheduled reports
 
-### API Entegrasyon ModÃ¼lÃ¼
+### API Entegrasyon Modülü
 - [ ] API Gateway kurulumu
 - [ ] Webhook sistemi
   - [ ] Webhook registry
   - [ ] Event triggering
   - [ ] Retry mechanism
 - [ ] Third-party integrations
-  - [ ] Accounting software (Ã¶rn: SAP, Logo)
+  - [ ] Accounting software (örn: SAP, Logo)
   - [ ] ERP systems
   - [ ] CRM integrations
 - [ ] API rate limiting & throttling
 - [ ] API key management
 
-### Filo YÃ¶netimi ModÃ¼lÃ¼
+### Filo Yönetimi Modülü
 - [ ] Maintenance scheduling
   - [ ] Service intervals
   - [ ] Maintenance history
@@ -338,7 +338,7 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
   - [ ] Insurance management
   - [ ] Document expiry alerts
 
-### Dinamik FiyatlandÄ±rma ModÃ¼lÃ¼
+### Dinamik Fiyatlandırma Modülü
 - [ ] Pricing engine
   - [ ] Rule-based pricing
   - [ ] Dynamic factors (distance, weight, urgency)
@@ -354,80 +354,80 @@ Bu dokÃ¼man, projenin ilerlemesini ve Ã¶zellik setini takip eder.
 
 ---
 
-## ğŸ“‹ Abonelik PlanlarÄ± Ã–zeti
+## 📋 Abonelik Planları Özeti
 
-### 1. Temel Plan (KÃ¼Ã§Ã¼k Ä°ÅŸletmeler Ä°Ã§in)
-Bu plan, kendi araÃ§larÄ±yla operasyon yÃ¼rÃ¼ten ve temel dijitalleÅŸmeye ihtiyaÃ§ duyan kÃ¼Ã§Ã¼k firmalar iÃ§in idealdir.
+### 1. Temel Plan (Küçük İşletmeler İçin)
+Bu plan, kendi araçlarıyla operasyon yürüten ve temel dijitalleşmeye ihtiyaç duyan küçük firmalar için idealdir.
 
-**Ã–zellikler:**
-- [x] KullanÄ±cÄ± YÃ¶netimi (Rol bazlÄ± eriÅŸim)
-- [x] Temel SipariÅŸ YÃ¶netimi
-- [x] AraÃ§ ve ÅofÃ¶r YÃ¶netimi
+**Özellikler:**
+- [x] Kullanıcı Yönetimi (Rol bazlı erişim)
+- [x] Temel Sipariş Yönetimi
+- [x] Araç ve Şoför Yönetimi
 - [x] Manuel Durum Takibi
 - [x] Temel Raporlama
 
-**Durum:** %80 TamamlandÄ± (Validation ve UI iyileÅŸtirmeleri gerekli)
+**Durum:** %80 Tamamlandı (Validation ve UI iyileştirmeleri gerekli)
 
-### 2. Profesyonel Plan (Orta Ã–lÃ§ekli Ä°ÅŸletmeler Ä°Ã§in)
-Hem kendi filosunu hem de dÄ±ÅŸ tedarikÃ§ileri yÃ¶neten firmalar iÃ§in.
+### 2. Profesyonel Plan (Orta Ölçekli İşletmeler İçin)
+Hem kendi filosunu hem de dış tedarikçileri yöneten firmalar için.
 
-**Ã–zellikler:**
-- [x] *TÃ¼m Temel Plan Ã¶zellikleri*
-- [x] TedarikÃ§i YÃ¶netimi ModÃ¼lÃ¼
-- [ ] GerÃ§ek ZamanlÄ± Takip ModÃ¼lÃ¼
-- [ ] Belge YÃ¶netimi ModÃ¼lÃ¼
-- [ ] MÃ¼ÅŸteri PortalÄ± ModÃ¼lÃ¼
-- [ ] Fatura ModÃ¼lÃ¼
+**Özellikler:**
+- [x] *Tüm Temel Plan özellikleri*
+- [x] Tedarikçi Yönetimi Modülü
+- [ ] Gerçek Zamanlı Takip Modülü
+- [ ] Belge Yönetimi Modülü
+- [ ] Müşteri Portalı Modülü
+- [ ] Fatura Modülü
 
-**Durum:** %20 TamamlandÄ±
+**Durum:** %20 Tamamlandı
 
-### 3. Kurumsal Plan (BÃ¼yÃ¼k Ã–lÃ§ekli Operasyonlar Ä°Ã§in)
-Otomasyon, optimizasyon ve entegrasyon ihtiyacÄ± olan bÃ¼yÃ¼k operasyonlar iÃ§in.
+### 3. Kurumsal Plan (Büyük Ölçekli Operasyonlar İçin)
+Otomasyon, optimizasyon ve entegrasyon ihtiyacı olan büyük operasyonlar için.
 
-**Ã–zellikler:**
-- [ ] *TÃ¼m Profesyonel Plan Ã¶zellikleri*
-- [ ] Rota ve YÃ¼k Optimizasyonu ModÃ¼lÃ¼
-- [ ] GeliÅŸmiÅŸ Analitik ve BI ModÃ¼lÃ¼
-- [ ] API Entegrasyon ModÃ¼lÃ¼
-- [ ] Filo YÃ¶netimi ModÃ¼lÃ¼
-- [ ] Dinamik FiyatlandÄ±rma ModÃ¼lÃ¼
+**Özellikler:**
+- [ ] *Tüm Profesyonel Plan özellikleri*
+- [ ] Rota ve Yük Optimizasyonu Modülü
+- [ ] Gelişmiş Analitik ve BI Modülü
+- [ ] API Entegrasyon Modülü
+- [ ] Filo Yönetimi Modülü
+- [ ] Dinamik Fiyatlandırma Modülü
 
-**Durum:** %0 TamamlandÄ±
-
----
-
-## ğŸ“ Ãœyelik SÄ±rasÄ±nda Sorulacak Anahtar Sorular
-
-Bu sorular mÃ¼ÅŸteriye en uygun planÄ± Ã¶nermek iÃ§in kullanÄ±lacaktÄ±r:
-
-1. "Filo'nuzda kaÃ§ araÃ§ bulunuyor?"
-2. "OperasyonlarÄ±nÄ±zda harici taÅŸÄ±yÄ±cÄ±lar (tedarikÃ§iler) ile Ã§alÄ±ÅŸÄ±yor musunuz?"
-3. "AylÄ±k ortalama kaÃ§ sevkiyat yÃ¶netiyorsunuz?"
-4. "MÃ¼ÅŸterilerinize sevkiyatlarÄ±nÄ± canlÄ± olarak takip edebilecekleri bir portal sunmak ister misiniz?"
-5. "GeliÅŸmiÅŸ rota ve yÃ¼k optimizasyonuna ihtiyacÄ±nÄ±z var mÄ±?"
+**Durum:** %0 Tamamlandı
 
 ---
 
-## ğŸ“… Zaman Ã‡izelgesi Ã–zeti
+## 📝 Üyelik Sırasında Sorulacak Anahtar Sorular
 
-| AÅŸama | SÃ¼re | Durum |
+Bu sorular müşteriye en uygun planı önermek için kullanılacaktır:
+
+1. "Filo'nuzda kaç araç bulunuyor?"
+2. "Operasyonlarınızda harici taşıyıcılar (tedarikçiler) ile çalışıyor musunuz?"
+3. "Aylık ortalama kaç sevkiyat yönetiyorsunuz?"
+4. "Müşterilerinize sevkiyatlarını canlı olarak takip edebilecekleri bir portal sunmak ister misiniz?"
+5. "Gelişmiş rota ve yük optimizasyonuna ihtiyacınız var mı?"
+
+---
+
+## 📅 Zaman Çizelgesi Özeti
+
+| Aşama | Süre | Durum |
 |-------|------|-------|
-| AÅŸama 1: Stabilizasyon | 1-2 Hafta | ğŸš§ Devam Ediyor |
-| AÅŸama 2: MVP Tamamlama | 2-3 Hafta | â³ Bekliyor |
-| AÅŸama 3: Profesyonel Plan | 3-4 Hafta | â³ Bekliyor |
-| AÅŸama 4: Production HazÄ±rlÄ±ÄŸÄ± | 2 Hafta | â³ Bekliyor |
-| AÅŸama 5: Kurumsal Plan | 4-6 Hafta | â³ Bekliyor |
+| Aşama 1: Stabilizasyon | 1-2 Hafta | 🚧 Devam Ediyor |
+| Aşama 2: MVP Tamamlama | 2-3 Hafta | ⏳ Bekliyor |
+| Aşama 3: Profesyonel Plan | 3-4 Hafta | ⏳ Bekliyor |
+| Aşama 4: Production Hazırlığı | 2 Hafta | ⏳ Bekliyor |
+| Aşama 5: Kurumsal Plan | 4-6 Hafta | ⏳ Bekliyor |
 
-**Toplam Tahmini SÃ¼re:** 12-17 Hafta (3-4 Ay)
+**Toplam Tahmini Süre:** 12-17 Hafta (3-4 Ay)
 
 ---
 
-## ğŸ”— Ä°lgili DokÃ¼manlar
+## 🔗 İlgili Dokümanlar
 
-- [SECURITY.md](./SECURITY.md) - GÃ¼venlik politikalarÄ± ve aÃ§Ä±klar
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Sistem mimarisi detaylarÄ±
-- [API_DESIGN.md](./API_DESIGN.md) - API endpoint dokÃ¼mantasyonu
+- [SECURITY.md](./SECURITY.md) - Güvenlik politikaları ve açıklar
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Sistem mimarisi detayları
+- [API_DESIGN.md](./API_DESIGN.md) - API endpoint dokümantasyonu
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment ve production rehberi
-- [TESTING.md](./TESTING.md) - Test stratejisi ve Ã¶rnekler
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - KatkÄ±da bulunma kurallarÄ±
-- [ENVIRONMENT.md](./ENVIRONMENT.md) - Environment variables dokÃ¼mantasyonu
+- [TESTING.md](./TESTING.md) - Test stratejisi ve örnekler
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Katkıda bulunma kuralları
+- [ENVIRONMENT.md](./ENVIRONMENT.md) - Environment variables dokümantasyonu

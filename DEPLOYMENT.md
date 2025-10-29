@@ -1,12 +1,12 @@
-﻿# Production Deployment Rehberi
+# Production Deployment Rehberi
 
-Bu dokÃ¼man, TMS SaaS platformunun production ortamÄ±na deploy edilmesi iÃ§in gereken adÄ±mlarÄ± ve best practices'leri iÃ§erir.
+Bu doküman, TMS SaaS platformunun production ortamına deploy edilmesi için gereken adımları ve best practices'leri içerir.
 
-**Son GÃ¼ncelleme:** 23 Ekim 2025
+**Son Güncelleme:** 23 Ekim 2025
 
 ---
 
-## ğŸ“‹ Ä°Ã§indekiler
+## 📋 İçindekiler
 
 - [Production Checklist](#production-checklist)
 - [Docker Production Optimizasyonu](#docker-production-optimizasyonu)
@@ -14,49 +14,49 @@ Bu dokÃ¼man, TMS SaaS platformunun production ortamÄ±na deploy edilmesi iÃ�
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Monitoring ve Logging](#monitoring-ve-logging)
 - [Backup Stratejisi](#backup-stratejisi)
-- [SSL/TLS YapÄ±landÄ±rmasÄ±](#ssltls-yapÄ±landÄ±rmasÄ±)
-- [Deployment SenaryolarÄ±](#deployment-senaryolarÄ±)
+- [SSL/TLS Yapılandırması](#ssltls-yapılandırması)
+- [Deployment Senaryoları](#deployment-senaryoları)
 
 ---
 
-## ğŸª„ Setup Wizard for Production
+## 🪄 Setup Wizard for Production
 
-### Setup Wizard KullanÄ±mÄ±
+### Setup Wizard Kullanımı
 
-Production ortamÄ±nda setup wizard kullanmak iÃ§in iki yaklaÅŸÄ±m:
+Production ortamında setup wizard kullanmak için iki yaklaşım:
 
-#### YaklaÅŸÄ±m 1: Web-Based Setup (Ã–nerilen)
+#### Yaklaşım 1: Web-Based Setup (Önerilen)
 
-1. **Ä°lk Deployment:**
+1. **İlk Deployment:**
    ```bash
-   # Container'larÄ± baÅŸlat
+   # Container'ları başlat
    docker-compose -f docker-compose.prod.yml up -d
    ```
 
-2. **Domain'e EriÅŸim:**
+2. **Domain'e Erişim:**
    ```
    https://app.yourdomain.com
    ```
 
-3. **Setup Wizard Otomatik AÃ§Ä±lÄ±r:**
-   - Database ayarlarÄ±nÄ± yapÄ±n
-   - Admin kullanÄ±cÄ± oluÅŸturun
-   - Sistem ayarlarÄ±nÄ± yapÄ±landÄ±rÄ±n
-   - Kurulumu tamamlayÄ±n
+3. **Setup Wizard Otomatik Açılır:**
+   - Database ayarlarını yapın
+   - Admin kullanıcı oluşturun
+   - Sistem ayarlarını yapılandırın
+   - Kurulumu tamamlayın
 
-4. **Production iÃ§in Ã–nemli:**
-   - âœ… GÃ¼Ã§lÃ¼ database ÅŸifresi kullanÄ±n
-   - âœ… GÃ¼Ã§lÃ¼ admin ÅŸifresi (min 12 karakter)
-   - âœ… JWT secret otomatik oluÅŸturulsun
-   - âœ… HTTPS kullanÄ±n
-   - âœ… CORS allowed origins production domain
+4. **Production için Önemli:**
+   - ✅ Güçlü database şifresi kullanın
+   - ✅ Güçlü admin şifresi (min 12 karakter)
+   - ✅ JWT secret otomatik oluşturulsun
+   - ✅ HTTPS kullanın
+   - ✅ CORS allowed origins production domain
 
-#### YaklaÅŸÄ±m 2: Pre-configured Deployment
+#### Yaklaşım 2: Pre-configured Deployment
 
-Otomatik deployment iÃ§in (CI/CD):
+Otomatik deployment için (CI/CD):
 
 ```bash
-# 1. Environment variables hazÄ±rla
+# 1. Environment variables hazırla
 cat > .env << EOF
 POSTGRES_USER=prod_user
 POSTGRES_PASSWORD=$(openssl rand -base64 32)
@@ -64,19 +64,19 @@ JWT_SECRET=$(openssl rand -base64 32)
 NODE_ENV=production
 EOF
 
-# 2. Setup wizard'Ä± devre dÄ±ÅŸÄ± bÄ±rak
+# 2. Setup wizard'ı devre dışı bırak
 echo "SKIP_SETUP_WIZARD=true" >> backend/.env
 
-# 3. Initial setup script Ã§alÄ±ÅŸtÄ±r
+# 3. Initial setup script çalıştır
 docker-compose -f docker-compose.prod.yml run backend npm run setup:init
 
-# 4. Container'larÄ± baÅŸlat
+# 4. Container'ları başlat
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### Setup Wizard Security (Production)
 
-#### SSL/TLS ZorunluluÄŸu
+#### SSL/TLS Zorunluluğu
 
 ```typescript
 // backend/src/setup/setup.middleware.ts
@@ -87,7 +87,7 @@ if (process.env.NODE_ENV === 'production' && !req.secure) {
 
 #### Setup Token Expiration
 
-Production'da daha kÄ±sa sÃ¼re:
+Production'da daha kısa süre:
 
 ```typescript
 // Production: 15 dakika
@@ -96,7 +96,7 @@ const SETUP_TOKEN_TTL = process.env.NODE_ENV === 'production' ? 900 : 1800;
 
 #### Rate Limiting
 
-Setup endpoint'leri iÃ§in Ã¶zel rate limit:
+Setup endpoint'leri için özel rate limit:
 
 ```typescript
 @Throttle(5, 60) // 5 request per minute
@@ -106,7 +106,7 @@ async validateDatabase() { }
 
 ### Automated Setup (CI/CD)
 
-GitHub Actions Ã¶rneÄŸi:
+GitHub Actions örneği:
 
 ```yaml
 # .github/workflows/deploy-production.yml
@@ -121,7 +121,7 @@ GitHub Actions Ã¶rneÄŸi:
 
 ### Setup Reset (Production)
 
-âš ï¸ **Dikkat:** Production'da setup reset **TÃœM VERÄ°LERÄ° SÄ°LER!**
+⚠️ **Dikkat:** Production'da setup reset **TÜM VERİLERİ SİLER!**
 
 ```bash
 # Admin user ile
@@ -135,66 +135,66 @@ docker-compose exec database psql -U prod_user -d tmsdb \
 
 ---
 
-## âœ… Production Checklist
+## ✅ Production Checklist
 
 ### Pre-Deployment Kontrolleri
 
 #### Setup & Configuration
-- [ ] Setup wizard tamamlandÄ± (veya SKIP_SETUP_WIZARD=true)
-- [ ] Database credentials gÃ¼venli ve gÃ¼Ã§lÃ¼
+- [ ] Setup wizard tamamlandı (veya SKIP_SETUP_WIZARD=true)
+- [ ] Database credentials güvenli ve güçlü
 - [ ] JWT secret minimum 32 karakter
-- [ ] Admin kullanÄ±cÄ± oluÅŸturuldu
-- [ ] System settings production deÄŸerleri ile
+- [ ] Admin kullanıcı oluşturuldu
+- [ ] System settings production değerleri ile
 
-#### GÃ¼venlik
-- [ ] TÃ¼m environment variables production deÄŸerleriyle ayarlandÄ±
-- [ ] JWT secret key gÃ¼venli ve benzersiz
-- [ ] Database credentials gÃ¼Ã§lÃ¼
+#### Güvenlik
+- [ ] Tüm environment variables production değerleriyle ayarlandı
+- [ ] JWT secret key güvenli ve benzersiz
+- [ ] Database credentials güçlü
 - [ ] CORS sadece production domain'lerine izin veriyor
-- [ ] Rate limiting aktif ve uygun deÄŸerlerde
+- [ ] Rate limiting aktif ve uygun değerlerde
 - [ ] HTTPS zorunlu
-- [ ] Security headers yapÄ±landÄ±rÄ±ldÄ± (Helmet)
-- [ ] Input validation tÃ¼m endpoint'lerde
-- [ ] SQL injection korumasÄ± aktif
-- [ ] XSS korumasÄ± aktif
-- [ ] CSRF korumasÄ± aktif (gerekirse)
+- [ ] Security headers yapılandırıldı (Helmet)
+- [ ] Input validation tüm endpoint'lerde
+- [ ] SQL injection koruması aktif
+- [ ] XSS koruması aktif
+- [ ] CSRF koruması aktif (gerekirse)
 
 #### Database
 - [ ] Migration'lar test edildi
-- [ ] `synchronize: false` ayarlandÄ±
-- [ ] Connection pooling yapÄ±landÄ±rÄ±ldÄ±
-- [ ] Database backup stratejisi hazÄ±r
-- [ ] Indexler oluÅŸturuldu
+- [ ] `synchronize: false` ayarlandı
+- [ ] Connection pooling yapılandırıldı
+- [ ] Database backup stratejisi hazır
+- [ ] Indexler oluşturuldu
 - [ ] Query performance optimize edildi
 
 #### Application
-- [ ] TÃ¼m testler geÃ§ti (unit, integration, e2e)
-- [x] Error handling tüm endpoint'lerde
-- [x] Logging yapılandırıldı
-- [ ] Health check endpoint'leri Ã§alÄ±ÅŸÄ±yor
-- [ ] API documentation gÃ¼ncel
-- [ ] Dependencies gÃ¼ncel ve gÃ¼venli
+- [ ] Tüm testler geçti (unit, integration, e2e)
+- [ ] Error handling tüm endpoint'lerde
+- [ ] Logging yapılandırıldı
+- [ ] Health check endpoint'leri çalışıyor
+- [ ] API documentation güncel
+- [ ] Dependencies güncel ve güvenli
 
 #### DevOps
 - [ ] Docker images optimize edildi
-- [ ] CI/CD pipeline Ã§alÄ±ÅŸÄ±yor
+- [ ] CI/CD pipeline çalışıyor
 - [ ] Monitoring kuruldu
-- [ ] Alerting yapÄ±landÄ±rÄ±ldÄ±
+- [ ] Alerting yapılandırıldı
 - [ ] Backup ve restore test edildi
-- [ ] Load testing yapÄ±ldÄ±
-- [ ] Rollback planÄ± hazÄ±r
+- [ ] Load testing yapıldı
+- [ ] Rollback planı hazır
 
 #### Frontend
 - [ ] Production build optimize edildi
 - [ ] Bundle size kontrol edildi
 - [ ] Image'lar optimize edildi
-- [ ] CDN yapÄ±landÄ±rÄ±ldÄ± (opsiyonel)
+- [ ] CDN yapılandırıldı (opsiyonel)
 - [ ] SEO optimize edildi
-- [ ] Performance audit yapÄ±ldÄ± (Lighthouse)
+- [ ] Performance audit yapıldı (Lighthouse)
 
 ---
 
-## ğŸ³ Docker Production Optimizasyonu
+## 🐳 Docker Production Optimizasyonu
 
 ### Backend Dockerfile (Production)
 
@@ -418,28 +418,28 @@ networks:
 
 ---
 
-## ğŸ—„ï¸ Database Migration Stratejisi
+## 🗄️ Database Migration Stratejisi
 
-### Migration OluÅŸturma
+### Migration Oluşturma
 
 ```bash
-# TypeORM migration oluÅŸtur
+# TypeORM migration oluştur
 npm run migration:generate -- -n CreateInitialSchema
 
-# Migration dosyasÄ±: src/migrations/1234567890-CreateInitialSchema.ts
+# Migration dosyası: src/migrations/1234567890-CreateInitialSchema.ts
 ```
 
-### Migration YapÄ±sÄ±
+### Migration Yapısı
 
 ```typescript
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateInitialSchema1234567890 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Schema oluÅŸtur
+    // Schema oluştur
     await queryRunner.query(`CREATE SCHEMA IF NOT EXISTS "tenant_schema"`);
     
-    // TablolarÄ± oluÅŸtur
+    // Tabloları oluştur
     await queryRunner.query(`
       CREATE TABLE "tenant_schema"."orders" (
         "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -452,7 +452,7 @@ export class CreateInitialSchema1234567890 implements MigrationInterface {
       )
     `);
     
-    // Index'leri oluÅŸtur
+    // Index'leri oluştur
     await queryRunner.query(`
       CREATE INDEX "IDX_orders_status" ON "tenant_schema"."orders" ("status")
     `);
@@ -489,7 +489,7 @@ export class TenantMigrationService {
       // Run migrations
       await this.dataSource.runMigrations();
       
-      console.log(`âœ“ Migrations completed for ${tenant.schema}`);
+      console.log(`✓ Migrations completed for ${tenant.schema}`);
     }
   }
 
@@ -521,7 +521,7 @@ export class TenantMigrationService {
 
 ---
 
-## ğŸ”„ CI/CD Pipeline
+## 🔄 CI/CD Pipeline
 
 ### GitHub Actions Workflow
 
@@ -656,7 +656,7 @@ jobs:
 
 ---
 
-## ğŸ“Š Monitoring ve Logging
+## 📊 Monitoring ve Logging
 
 ### Health Check Endpoints
 
@@ -743,7 +743,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 ---
 
-## ğŸ’¾ Backup Stratejisi
+## 💾 Backup Stratejisi
 
 ### Automated Database Backup Script
 
@@ -770,10 +770,10 @@ echo "Backup completed: ${BACKUP_FILE}.gz"
 ### Cron Job Setup
 
 ```bash
-# GÃ¼nlÃ¼k backup (her gece 2:00'de)
+# Günlük backup (her gece 2:00'de)
 0 2 * * * /opt/tms/scripts/backup-database.sh >> /var/log/tms-backup.log 2>&1
 
-# HaftalÄ±k full backup (Pazar gÃ¼nleri 3:00'te)
+# Haftalık full backup (Pazar günleri 3:00'te)
 0 3 * * 0 /opt/tms/scripts/full-backup.sh >> /var/log/tms-full-backup.log 2>&1
 ```
 
@@ -802,7 +802,7 @@ echo "Restore completed from: $BACKUP_FILE"
 
 ---
 
-## ğŸ” SSL/TLS YapÄ±landÄ±rmasÄ±
+## 🔐 SSL/TLS Yapılandırması
 
 ### Nginx SSL Configuration
 
@@ -885,7 +885,7 @@ docker run -it --rm \
 
 ---
 
-## ğŸš€ Deployment SenaryolarÄ±
+## 🚀 Deployment Senaryoları
 
 ### Zero-Downtime Deployment
 
@@ -935,7 +935,7 @@ echo "Rollback completed!"
 
 ---
 
-## ğŸ“ˆ Performance Optimization
+## 📈 Performance Optimization
 
 - [ ] Database query optimization
 - [ ] Connection pooling
@@ -948,10 +948,9 @@ echo "Rollback completed!"
 
 ---
 
-## ğŸ”— Kaynaklar
+## 🔗 Kaynaklar
 
 - [NestJS Production Best Practices](https://docs.nestjs.com/)
 - [Docker Production Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [PostgreSQL Performance Tuning](https://wiki.postgresql.org/wiki/Performance_Optimization)
 - [Nginx Configuration Guide](https://nginx.org/en/docs/)
-

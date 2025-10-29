@@ -1,60 +1,60 @@
-﻿# GÃ¼venlik PolitikasÄ± ve Best Practices
+# Güvenlik Politikası ve Best Practices
 
-Bu dokÃ¼man, TMS SaaS platformunun gÃ¼venlik politikalarÄ±nÄ±, tespit edilen gÃ¼venlik aÃ§Ä±klarÄ±nÄ± ve Ã§Ã¶zÃ¼m planlarÄ±nÄ± iÃ§erir.
+Bu doküman, TMS SaaS platformunun güvenlik politikalarını, tespit edilen güvenlik açıklarını ve çözüm planlarını içerir.
 
-**Son GÃ¼ncelleme:** 23 Ekim 2025
-
----
-
-## ğŸ“‹ Ä°Ã§indekiler
-
-- [GÃ¼venlik PolitikasÄ±](#gÃ¼venlik-politikasÄ±)
-- [Tespit Edilen GÃ¼venlik AÃ§Ä±klarÄ±](#tespit-edilen-gÃ¼venlik-aÃ§Ä±klarÄ±)
-- [GÃ¼venlik Best Practices](#gÃ¼venlik-best-practices)
-- [GÃ¼venlik AÃ§Ä±ÄŸÄ± Bildirimi](#gÃ¼venlik-aÃ§Ä±ÄŸÄ±-bildirimi)
+**Son Güncelleme:** 23 Ekim 2025
 
 ---
 
-## ğŸ”’ GÃ¼venlik PolitikasÄ±
+## 📋 İçindekiler
+
+- [Güvenlik Politikası](#güvenlik-politikası)
+- [Tespit Edilen Güvenlik Açıkları](#tespit-edilen-güvenlik-açıkları)
+- [Güvenlik Best Practices](#güvenlik-best-practices)
+- [Güvenlik Açığı Bildirimi](#güvenlik-açığı-bildirimi)
+
+---
+
+## 🔒 Güvenlik Politikası
 
 ### Desteklenen Versiyonlar
 
 | Version | Destekleniyor |
 | ------- | ------------- |
-| 0.x     | âœ… (Development) |
+| 0.x     | ✅ (Development) |
 
-### GÃ¼venlik GÃ¼ncellemeleri
+### Güvenlik Güncellemeleri
 
-- Kritik gÃ¼venlik aÃ§Ä±klarÄ± 24 saat iÃ§inde dÃ¼zeltilir
-- YÃ¼ksek Ã¶ncelikli aÃ§Ä±klar 1 hafta iÃ§inde dÃ¼zeltilir
-- Orta Ã¶ncelikli aÃ§Ä±klar 2 hafta iÃ§inde dÃ¼zeltilir
+- Kritik güvenlik açıkları 24 saat içinde düzeltilir
+- Yüksek öncelikli açıklar 1 hafta içinde düzeltilir
+- Orta öncelikli açıklar 2 hafta içinde düzeltilir
 
 ---
 
-## âš ï¸ Tespit Edilen GÃ¼venlik AÃ§Ä±klarÄ±
+## ⚠️ Tespit Edilen Güvenlik Açıkları
 
-### ğŸ”´ Kritik Ã–ncelikli
+### 🔴 Kritik Öncelikli
 
-#### 1. JWT Validation EksikliÄŸi
-**Durum:** ğŸš§ AÃ§Ä±k  
+#### 1. JWT Validation Eksikliği
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Kritik
 
-**AÃ§Ä±klama:**
-`TenantMiddleware`'de JWT token sadece `decode()` ediliyor, `verify()` ile doÄŸrulanmÄ±yor. Bu, sahte token'larÄ±n kabul edilmesine neden olabilir.
+**Açıklama:**
+`TenantMiddleware`'de JWT token sadece `decode()` ediliyor, `verify()` ile doğrulanmıyor. Bu, sahte token'ların kabul edilmesine neden olabilir.
 
 **Mevcut Kod:**
 ```typescript
-// âŒ GÃ¼venlik aÃ§Ä±ÄŸÄ± var
+// ❌ Güvenlik açığı var
 const decoded: any = decode(token);
 if (decoded && decoded.tenantId) {
   tenantId = decoded.tenantId;
 }
 ```
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 ```typescript
-// âœ… GÃ¼venli implementasyon
+// ✅ Güvenli implementasyon
 try {
   const decoded = this.jwtService.verify(token, {
     secret: process.env.JWT_SECRET,
@@ -66,31 +66,31 @@ try {
 }
 ```
 
-**DÃ¼zeltme AdÄ±mlarÄ±:**
-- [x] `JwtService` injection'ını `TenantMiddleware`'e ekle
-- [x] `decode()` yerine `verify()` kullan
-- [x] Error handling ekle
+**Düzeltme Adımları:**
+- [ ] `JwtService` injection'ını `TenantMiddleware`'e ekle
+- [ ] `decode()` yerine `verify()` kullan
+- [ ] Error handling ekle
 - [ ] Unit test yaz
 - [ ] Integration test yaz
 
 ---
 
-#### 2. DTO Validation EksikliÄŸi
-**Durum:** ğŸš§ AÃ§Ä±k  
+#### 2. DTO Validation Eksikliği
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Kritik
 
-**AÃ§Ä±klama:**
-Input validation yapÄ±lmadÄ±ÄŸÄ± iÃ§in SQL injection, XSS ve diÄŸer injection saldÄ±rÄ±larÄ±na aÃ§Ä±k.
+**Açıklama:**
+Input validation yapılmadığı için SQL injection, XSS ve diğer injection saldırılarına açık.
 
-**DÃ¼zeltme PlanÄ±:**
-- [ ] `class-validator` ve `class-transformer` paketlerini yÃ¼kle
-- [ ] TÃ¼m DTO'lara validation decorator'larÄ± ekle
-- [ ] `ValidationPipe`'Ä± global olarak aktifleÅŸtir
-- [ ] Custom validation kurallarÄ± yaz (plaka formatÄ±, telefon vb.)
+**Düzeltme Planı:**
+- [ ] `class-validator` ve `class-transformer` paketlerini yükle
+- [ ] Tüm DTO'lara validation decorator'ları ekle
+- [ ] `ValidationPipe`'ı global olarak aktifleştir
+- [ ] Custom validation kuralları yaz (plaka formatı, telefon vb.)
 - [ ] Validation test'leri yaz
 
-**Ã–rnek DÃ¼zeltme:**
+**Örnek Düzeltme:**
 ```typescript
 // before
 export class CreateOrderDto {
@@ -116,37 +116,37 @@ export class CreateOrderDto {
 
 ---
 
-#### 3. Environment Variables GÃ¼venliÄŸi
-**Durum:** ğŸš§ AÃ§Ä±k  
+#### 3. Environment Variables Güvenliği
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Kritik
 
-**AÃ§Ä±klama:**
-- `.env` dosyalarÄ± mevcut deÄŸil
+**Açıklama:**
+- `.env` dosyaları mevcut değil
 - Credentials docker-compose.yml'de hardcoded
-- JWT secret gÃ¼venli deÄŸil
-- `.env` dosyalarÄ± `.gitignore`'da ama `.env.example` yok
+- JWT secret güvenli değil
+- `.env` dosyaları `.gitignore`'da ama `.env.example` yok
 
-**DÃ¼zeltme PlanÄ±:**
-- [ ] Backend iÃ§in `.env.example` oluÅŸtur
-- [ ] Frontend iÃ§in `.env.local.example` oluÅŸtur
-- [ ] Root iÃ§in `.env.example` oluÅŸtur (docker-compose)
-- [ ] `.gitignore`'u gÃ¼ncelle
+**Düzeltme Planı:**
+- [ ] Backend için `.env.example` oluştur
+- [ ] Frontend için `.env.local.example` oluştur
+- [ ] Root için `.env.example` oluştur (docker-compose)
+- [ ] `.gitignore`'u güncelle
 - [ ] `docker-compose.yml`'de environment variables kullan
-- [ ] Production iÃ§in secrets management kullan (AWS Secrets Manager, HashiCorp Vault)
-- [ ] README.md'de setup talimatlarÄ± ekle
+- [ ] Production için secrets management kullan (AWS Secrets Manager, HashiCorp Vault)
+- [ ] README.md'de setup talimatları ekle
 
 ---
 
-#### 4. CORS YapÄ±landÄ±rmasÄ± Eksik
-**Durum:** ğŸš§ AÃ§Ä±k  
+#### 4. CORS Yapılandırması Eksik
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
-**Risk Seviyesi:** YÃ¼ksek
+**Risk Seviyesi:** Yüksek
 
-**AÃ§Ä±klama:**
-CORS yapÄ±landÄ±rmasÄ± yapÄ±lmamÄ±ÅŸ, tÃ¼m origin'lere aÃ§Ä±k olabilir.
+**Açıklama:**
+CORS yapılandırması yapılmamış, tüm origin'lere açık olabilir.
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 ```typescript
 // main.ts
 app.enableCors({
@@ -157,7 +157,7 @@ app.enableCors({
 });
 ```
 
-**AdÄ±mlar:**
+**Adımlar:**
 - [ ] CORS middleware ekle
 - [ ] Allowed origins environment variable'dan al
 - [ ] Credentials enable et
@@ -167,14 +167,14 @@ app.enableCors({
 ---
 
 #### 5. Rate Limiting Yok
-**Durum:** ğŸš§ AÃ§Ä±k  
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
-**Risk Seviyesi:** YÃ¼ksek
+**Risk Seviyesi:** Yüksek
 
-**AÃ§Ä±klama:**
-API rate limiting olmadÄ±ÄŸÄ± iÃ§in DDoS ve brute force saldÄ±rÄ±larÄ±na aÃ§Ä±k.
+**Açıklama:**
+API rate limiting olmadığı için DDoS ve brute force saldırılarına açık.
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 ```typescript
 // app.module.ts
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -189,46 +189,46 @@ import { ThrottlerModule } from '@nestjs/throttler';
 })
 ```
 
-**AdÄ±mlar:**
-- [ ] `@nestjs/throttler` paketini yÃ¼kle
-- [ ] Global rate limiting yapÄ±landÄ±r
-- [ ] Login endpoint iÃ§in Ã¶zel rate limit (5 req/min)
-- [ ] Register endpoint iÃ§in Ã¶zel rate limit (3 req/min)
+**Adımlar:**
+- [ ] `@nestjs/throttler` paketini yükle
+- [ ] Global rate limiting yapılandır
+- [ ] Login endpoint için özel rate limit (5 req/min)
+- [ ] Register endpoint için özel rate limit (3 req/min)
 - [ ] Rate limit headers ekle
 - [ ] Test yaz
 
 ---
 
-### ğŸŸ¡ Orta Ã–ncelikli
+### 🟡 Orta Öncelikli
 
-#### 6. Password Policy ZayÄ±f
-**Durum:** ğŸš§ AÃ§Ä±k  
+#### 6. Password Policy Zayıf
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Orta
 
-**AÃ§Ä±klama:**
-Åifre politikasÄ± yok veya zayÄ±f.
+**Açıklama:**
+Şifre politikası yok veya zayıf.
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 - [ ] Minimum 8 karakter
-- [ ] En az 1 bÃ¼yÃ¼k harf, 1 kÃ¼Ã§Ã¼k harf, 1 rakam veya Ã¶zel karakter
-- [ ] Common password kontrolÃ¼
+- [ ] En az 1 büyük harf, 1 küçük harf, 1 rakam veya özel karakter
+- [ ] Common password kontrolü
 - [ ] Password strength indicator (frontend)
-- [ ] Åifre geÃ§miÅŸi kontrolÃ¼ (son 3 ÅŸifre kullanÄ±lmasÄ±n)
+- [ ] Şifre geçmişi kontrolü (son 3 şifre kullanılmasın)
 
 ---
 
 #### 7. Session Management
-**Durum:** ğŸš§ AÃ§Ä±k  
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Orta
 
-**AÃ§Ä±klama:**
-- Token refresh mekanizmasÄ± yok
+**Açıklama:**
+- Token refresh mekanizması yok
 - Token revocation sistemi yok
-- Logout'ta token invalidation yapÄ±lmÄ±yor
+- Logout'ta token invalidation yapılmıyor
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 - [ ] Refresh token implementasyonu
 - [ ] Token blacklist (Redis)
 - [ ] Logout endpoint'te token revoke et
@@ -237,41 +237,41 @@ import { ThrottlerModule } from '@nestjs/throttler';
 ---
 
 #### 8. Audit Logging Eksik
-**Durum:** ğŸš§ AÃ§Ä±k  
+**Durum:** 🚧 Açık  
 **Tespit Tarihi:** 23 Ekim 2025  
 **Risk Seviyesi:** Orta
 
-**AÃ§Ä±klama:**
-GÃ¼venlik olaylarÄ± log'lanmÄ±yor (baÅŸarÄ±sÄ±z login denemeleri, yetki ihlalleri vb.)
+**Açıklama:**
+Güvenlik olayları log'lanmıyor (başarısız login denemeleri, yetki ihlalleri vb.)
 
-**DÃ¼zeltme PlanÄ±:**
-- [ ] Audit log entity oluÅŸtur
-- [ ] BaÅŸarÄ±sÄ±z login denemeleri log'la
+**Düzeltme Planı:**
+- [ ] Audit log entity oluştur
+- [ ] Başarısız login denemeleri log'la
 - [ ] Authorization failures log'la
 - [ ] Critical operations log'la (delete, user changes)
 - [ ] Log retention policy
 
 ---
 
-### ğŸŸ¢ DÃ¼ÅŸÃ¼k Ã–ncelikli
+### 🟢 Düşük Öncelikli
 
 #### 9. HTTPS Enforcement
-**Durum:** ğŸ“ PlanlandÄ±  
-**Risk Seviyesi:** DÃ¼ÅŸÃ¼k (development'ta)
+**Durum:** 📝 Planlandı  
+**Risk Seviyesi:** Düşük (development'ta)
 
-**DÃ¼zeltme PlanÄ±:**
-- [ ] Production'da HTTPS zorunluluÄŸu
+**Düzeltme Planı:**
+- [ ] Production'da HTTPS zorunluluğu
 - [ ] HTTP to HTTPS redirect
 - [ ] HSTS header ekle
-- [ ] SSL/TLS certificate yÃ¶netimi
+- [ ] SSL/TLS certificate yönetimi
 
 ---
 
 #### 10. Security Headers
-**Durum:** ğŸ“ PlanlandÄ±  
-**Risk Seviyesi:** DÃ¼ÅŸÃ¼k
+**Durum:** 📝 Planlandı  
+**Risk Seviyesi:** Düşük
 
-**DÃ¼zeltme PlanÄ±:**
+**Düzeltme Planı:**
 ```typescript
 // Helmet middleware ile security headers
 app.use(helmet({
@@ -297,29 +297,29 @@ app.use(helmet({
 
 ---
 
-## ğŸ›¡ï¸ GÃ¼venlik Best Practices
+## 🛡️ Güvenlik Best Practices
 
-### Backend GÃ¼venliÄŸi
+### Backend Güvenliği
 
 #### 1. Authentication & Authorization
 ```typescript
-// âœ… Guard'larÄ± her zaman kullan
+// ✅ Guard'ları her zaman kullan
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 @Controller('users')
 export class UsersController { }
 
-// âœ… Password'larÄ± hash'le
+// ✅ Password'ları hash'le
 const salt = await bcrypt.genSalt(10);
 const hashedPassword = await bcrypt.hash(password, salt);
 
-// âœ… JWT secret'Ä± environment variable'dan al
+// ✅ JWT secret'ı environment variable'dan al
 jwtConstants.secret = process.env.JWT_SECRET;
 ```
 
 #### 2. Input Validation
 ```typescript
-// âœ… Her DTO'da validation kullan
+// ✅ Her DTO'da validation kullan
 export class CreateUserDto {
   @IsEmail()
   email: string;
@@ -330,7 +330,7 @@ export class CreateUserDto {
   password: string;
 }
 
-// âœ… ValidationPipe global olarak aktif
+// ✅ ValidationPipe global olarak aktif
 app.useGlobalPipes(new ValidationPipe({
   whitelist: true,
   forbidNonWhitelisted: true,
@@ -340,13 +340,13 @@ app.useGlobalPipes(new ValidationPipe({
 
 #### 3. Database Security
 ```typescript
-// âœ… TypeORM parameterized queries kullan (SQL injection Ã¶nleme)
+// ✅ TypeORM parameterized queries kullan (SQL injection önleme)
 await repository.find({ where: { email } });
 
-// âŒ Raw query'lerde parametre kullan
+// ❌ Raw query'lerde parametre kullan
 await repository.query('SELECT * FROM users WHERE email = $1', [email]);
 
-// âœ… Tenant isolation kontrolÃ¼
+// ✅ Tenant isolation kontrolü
 if (order.tenantId !== req.user.tenantId) {
   throw new ForbiddenException('Access denied');
 }
@@ -354,7 +354,7 @@ if (order.tenantId !== req.user.tenantId) {
 
 #### 4. Error Handling
 ```typescript
-// âœ… Sensitive bilgileri error'larda expose etme
+// ✅ Sensitive bilgileri error'larda expose etme
 catch (error) {
   if (process.env.NODE_ENV === 'production') {
     throw new InternalServerErrorException('An error occurred');
@@ -362,34 +362,34 @@ catch (error) {
   throw error;
 }
 
-// âœ… Generic error messages kullan
+// ✅ Generic error messages kullan
 throw new UnauthorizedException('Invalid credentials');
-// âŒ DetaylÄ± bilgi verme: 'User not found' veya 'Wrong password'
+// ❌ Detaylı bilgi verme: 'User not found' veya 'Wrong password'
 ```
 
 ---
 
-### Frontend GÃ¼venliÄŸi
+### Frontend Güvenliği
 
 #### 1. Token Storage
 ```typescript
-// âœ… HttpOnly cookies kullan (XSS'den korunur)
+// ✅ HttpOnly cookies kullan (XSS'den korunur)
 // veya
-// âœ… localStorage kullanÄ±yorsan XSS'e karÅŸÄ± dikkatli ol
+// ✅ localStorage kullanıyorsan XSS'e karşı dikkatli ol
 localStorage.setItem('token', token);
 
-// âŒ Token'Ä± URL'de gÃ¶nderme
-// âŒ Token'Ä± console.log'lama
+// ❌ Token'ı URL'de gönderme
+// ❌ Token'ı console.log'lama
 ```
 
 #### 2. Input Sanitization
 ```typescript
-// âœ… User input'larÄ± sanitize et
+// ✅ User input'ları sanitize et
 import DOMPurify from 'dompurify';
 
 const cleanHTML = DOMPurify.sanitize(userInput);
 
-// âœ… Form validation
+// ✅ Form validation
 const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().min(8).required(),
@@ -398,13 +398,13 @@ const schema = yup.object().shape({
 
 #### 3. API Requests
 ```typescript
-// âœ… HTTPS kullan (production)
+// ✅ HTTPS kullan (production)
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// âœ… Timeout belirle
+// ✅ Timeout belirle
 axios.defaults.timeout = 10000;
 
-// âœ… Error handling
+// ✅ Error handling
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -418,80 +418,80 @@ axios.interceptors.response.use(
 
 ---
 
-### DevOps GÃ¼venliÄŸi
+### DevOps Güvenliği
 
 #### 1. Environment Variables
 ```bash
-# âœ… .env dosyalarÄ±nÄ± git'e ekleme
+# ✅ .env dosyalarını git'e ekleme
 echo ".env" >> .gitignore
 echo ".env.local" >> .gitignore
 
-# âœ… .env.example oluÅŸtur
+# ✅ .env.example oluştur
 cp .env .env.example
-# Sonra .env.example'daki deÄŸerleri temizle
+# Sonra .env.example'daki değerleri temizle
 ```
 
 #### 2. Docker Security
 ```dockerfile
-# âœ… Non-root user kullan
+# ✅ Non-root user kullan
 USER node
 
-# âœ… Multi-stage builds
+# ✅ Multi-stage builds
 FROM node:18-alpine AS builder
 FROM node:18-alpine AS production
 
-# âœ… Secrets build argument olarak geÃ§me
-# âŒ ARG DB_PASSWORD=secret
-# âœ… Runtime'da environment variable kullan
+# ✅ Secrets build argument olarak geçme
+# ❌ ARG DB_PASSWORD=secret
+# ✅ Runtime'da environment variable kullan
 ```
 
 #### 3. Dependency Security
 ```bash
-# âœ… DÃ¼zenli dependency audit
+# ✅ Düzenli dependency audit
 npm audit
 npm audit fix
 
-# âœ… Outdated packages kontrolÃ¼
+# ✅ Outdated packages kontrolü
 npm outdated
 
-# âœ… Security scanning (Snyk, Dependabot)
+# ✅ Security scanning (Snyk, Dependabot)
 ```
 
 ---
 
-## ğŸ“Š GÃ¼venlik Checklist
+## 📊 Güvenlik Checklist
 
 ### Pre-Production Checklist
 
-- [ ] TÃ¼m kritik gÃ¼venlik aÃ§Ä±klarÄ± kapatÄ±ldÄ±
 - [ ] Tüm kritik güvenlik açıkları kapatıldı
-- [x] JWT validation implementasyonu
-- [x] DTO validation tüm endpoint'lerde
-- [x] CORS yapılandırması yapıldı
-- [x] Rate limiting aktif
-- [x] Environment variables düzenlendi
+- [ ] JWT validation implementasyonu
+- [ ] DTO validation tüm endpoint'lerde
+- [ ] CORS yapılandırması yapıldı
+- [ ] Rate limiting aktif
+- [ ] Environment variables düzenlendi
 - [ ] HTTPS enabled
 - [ ] Security headers eklendi
-- [x] Error handling global filter ile
+- [ ] Error handling global filter ile
 - [ ] Audit logging implementasyonu
 - [ ] Dependency security audit yapıldı
-- [ ] Session management gÃ¼venli
-- [ ] Database backups yapÄ±landÄ±rÄ±ldÄ±
+- [ ] Password policy uygulandı
+- [ ] Session management güvenli
+- [ ] Database backups yapılandırıldı
 - [ ] Monitoring ve alerting kuruldu
 
 ### Regular Security Tasks
 
-**GÃ¼nlÃ¼k:**
-- [ ] Failed login attempts kontrolÃ¼
+**Günlük:**
+- [ ] Failed login attempts kontrolü
 - [ ] Error rate monitoring
 - [ ] Unusual activity detection
 
-**HaftalÄ±k:**
+**Haftalık:**
 - [ ] Security logs review
-- [ ] Dependency updates kontrolÃ¼
+- [ ] Dependency updates kontrolü
 - [ ] Backup test
 
-**AylÄ±k:**
+**Aylık:**
 - [ ] Full security audit
 - [ ] Penetration testing
 - [ ] Access control review
@@ -499,47 +499,47 @@ npm outdated
 
 ---
 
-## ğŸš¨ GÃ¼venlik AÃ§Ä±ÄŸÄ± Bildirimi
+## 🚨 Güvenlik Açığı Bildirimi
 
-### GÃ¼venlik AÃ§Ä±ÄŸÄ± BulduysanÄ±z
+### Güvenlik Açığı Bulduysanız
 
 1. **Hemen bildirin:** security@yourcompany.com
-2. **DetaylÄ± aÃ§Ä±klama:** Sorunu reproduce etme adÄ±mlarÄ±
-3. **Impact assessment:** GÃ¼venlik riskinin seviyesi
-4. **Proof of concept:** MÃ¼mkÃ¼nse PoC kodu/screenshot
+2. **Detaylı açıklama:** Sorunu reproduce etme adımları
+3. **Impact assessment:** Güvenlik riskinin seviyesi
+4. **Proof of concept:** Mümkünse PoC kodu/screenshot
 
-### Bildiri FormatÄ±
+### Bildiri Formatı
 
 ```markdown
-**BaÅŸlÄ±k:** [KÄ±sa aÃ§Ä±klama]
-**Risk Seviyesi:** [Kritik/YÃ¼ksek/Orta/DÃ¼ÅŸÃ¼k]
+**Başlık:** [Kısa açıklama]
+**Risk Seviyesi:** [Kritik/Yüksek/Orta/Düşük]
 **Kategori:** [SQL Injection/XSS/CSRF/vb.]
 
-**AÃ§Ä±klama:**
-[DetaylÄ± aÃ§Ä±klama]
+**Açıklama:**
+[Detaylı açıklama]
 
-**Reproduce AdÄ±mlarÄ±:**
-1. [AdÄ±m 1]
-2. [AdÄ±m 2]
-3. [AdÄ±m 3]
+**Reproduce Adımları:**
+1. [Adım 1]
+2. [Adım 2]
+3. [Adım 3]
 
 **Etki:**
 [Potansiyel impact]
 
-**Ã–nerilen DÃ¼zeltme:**
-[EÄŸer varsa]
+**Önerilen Düzeltme:**
+[Eğer varsa]
 ```
 
-### YanÄ±t SÃ¼reci
+### Yanıt Süreci
 
-1. **Teyit:** 24 saat iÃ§inde bildirimi alÄ±ndÄ± mesajÄ±
-2. **DeÄŸerlendirme:** 48 saat iÃ§inde risk analizi
-3. **DÃ¼zeltme:** Risk seviyesine gÃ¶re dÃ¼zeltme planÄ±
-4. **Bilgilendirme:** DÃ¼zeltme tamamlandÄ±ÄŸÄ±nda bilgilendirme
+1. **Teyit:** 24 saat içinde bildirimi alındı mesajı
+2. **Değerlendirme:** 48 saat içinde risk analizi
+3. **Düzeltme:** Risk seviyesine göre düzeltme planı
+4. **Bilgilendirme:** Düzeltme tamamlandığında bilgilendirme
 
 ---
 
-## ğŸ”— Ä°lgili Kaynaklar
+## 🔗 İlgili Kaynaklar
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [NestJS Security](https://docs.nestjs.com/security/authentication)
@@ -548,11 +548,10 @@ npm outdated
 
 ---
 
-## ğŸ“… GÃ¼venlik GÃ¼ncellemeleri
+## 📅 Güvenlik Güncellemeleri
 
-| Tarih | GÃ¼ncelleme | Durum |
+| Tarih | Güncelleme | Durum |
 |-------|------------|-------|
-| 2025-10-23 | Ä°lk gÃ¼venlik analizi | âœ… TamamlandÄ± |
-| 2025-10-xx | JWT validation dÃ¼zeltme | ğŸš§ PlanlandÄ± |
-| 2025-10-xx | DTO validation implementasyonu | ğŸš§ PlanlandÄ± |
-
+| 2025-10-23 | İlk güvenlik analizi | ✅ Tamamlandı |
+| 2025-10-xx | JWT validation düzeltme | 🚧 Planlandı |
+| 2025-10-xx | DTO validation implementasyonu | 🚧 Planlandı |

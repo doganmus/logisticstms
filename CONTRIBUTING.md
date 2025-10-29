@@ -724,4 +724,3 @@ Yeni özellik önerisi için:
 **Teşekkürler!** 🙏
 
 Katkılarınız projeyi daha iyi hale getiriyor!
-

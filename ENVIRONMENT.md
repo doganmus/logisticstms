@@ -288,35 +288,6 @@ LOG_LEVEL=debug
 
 ---
 
-### Seed Defaults (Opsiyonel)
-
-#### `SEED_TENANT_NAME`
-**Tip:** String  
-**Varsayılan:** `Demo Logistics Company`  
-**Açıklama:** Seed komutu çalıştığında oluşturulacak tenant adı.
-
-#### `SEED_TENANT_SCHEMA`
-**Tip:** String  
-**Varsayılan:** `demo_tenant_schema`  
-**Açıklama:** Seed tenant'ının PostgreSQL şema adı. Production ortamında şirket adınızı baz alarak benzersiz bir değer belirleyin.
-
-#### `SEED_ADMIN_EMAIL`
-**Tip:** String  
-**Varsayılan:** `admin@demo-logistics.com`  
-**Açıklama:** Oluşturulacak admin kullanıcısının e-posta adresi.
-
-#### `SEED_ADMIN_PASSWORD`
-**Tip:** String  
-**Varsayılan:** `DemoAdmin123!`  
-**Açıklama:** Admin kullanıcısı için kullanılacak şifre. Production ortamında güvenli bir parola ile değiştirin.
-
-#### `SEED_ADMIN_NAME`
-**Tip:** String  
-**Varsayılan:** `Demo Admin`  
-**Açıklama:** Admin kullanıcısının görünen adı.
-
----
-
 ### Email Configuration (Gelecek)
 
 #### `MAIL_HOST`
@@ -881,4 +852,3 @@ node scripts/setup-env.js --verbose
 - [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
 - [12-Factor App: Config](https://12factor.net/config)
 - [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)
-
