@@ -81,12 +81,12 @@ Bu doküman, projenin ilerlemesini ve özellik setini takip eder.
 - [x] Connection pooling optimize etme
 
 #### API Documentation
-- [ ] Swagger/OpenAPI kurulumu
-  - [ ] @nestjs/swagger paketi ekleme
-  - [ ] Tüm endpoint'lere decorator'lar ekleme
-  - [ ] DTO'ları dokümante etme
-  - [ ] Authentication scheme tanımlama
-- [ ] API versioning stratejisi
+- [x] Swagger/OpenAPI kurulumu
+  - [x] @nestjs/swagger paketi ekleme
+  - [x] Tüm endpoint'lere decorator'lar ekleme
+  - [x] DTO'ları dokümante etme
+  - [x] Authentication scheme tanımlama
+- [x] API versioning stratejisi
 
 ---
 

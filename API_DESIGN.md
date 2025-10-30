@@ -531,18 +531,44 @@ X-RateLimit-Reset: 1698058920
 
 ## 9. API Versioning
 
-API'ler version'lanarak geriye dönük uyumluluk sağlanır:
+API'leri versiyonlamak, geriye dönük uyumluluk ve kademeli geçişler için kritik. NestJS projesinde hem URI hem de header tabanlı yaklaşımları desteklemek kolaydır.
 
-### Version Format
-```
-/api/v1/orders
-/api/v2/orders (gelecek)
-```
+### 9.1 Varsayılan Kurulum (URI Versiyonlama)
+`main.ts` içinde global versiyonlamayı açın:
+```ts
+import { VersioningType } from '@nestjs/common';
 
-### Header-based Versioning (Alternatif)
+app.enableVersioning({
+  type: VersioningType.URI,
+  defaultVersion: '1',
+});
+```
+Bu yapılandırma ile endpoint'ler `/api/v1/orders` formatında servis edilir. Controller'larda `@Controller({ path: 'orders', version: '1' })` kullanarak hangi versiyonda oldukları belirtilir.
+
+### 9.2 Çoklu Versiyon Stratejisi
+Yeni versiyon yayınlarken mevcut controller'ı klonlayın ve yalnızca değişen metodları override edin. Örnek:
+```ts
+@Controller({ path: 'orders', version: '2' })
+export class OrdersV2Controller {
+  // V2'de farklı response dönen endpoint
+}
+```
+`app.setGlobalPrefix('api');` satırının versiyonlama ile çakışmadığından emin olun ve prefix'i enableVersioning'den önce çağırın.
+
+### 9.3 Header / Media Type Versiyonlama
+URI yerine header kullanmak istediğiniz API'ler için:
+```ts
+app.enableVersioning({
+  type: VersioningType.MEDIA_TYPE,
+  defaultVersion: '1',
+  header: 'Accept',
+});
+```
+İstemci şu header ile versiyonu seçer:
 ```
 Accept: application/vnd.tms.v1+json
 ```
+Swagger dokümantasyonunda bu yaklaşımı yansıtmak için `@ApiConsumes('application/vnd.tms.v1+json')` gibi decorator'lar ekleyin.
 
 ---
 
@@ -636,3 +662,75 @@ curl -X PATCH http://localhost:3000/orders/ORDER_ID \
     "status": "in_transit"
   }'
 ```
+
+---
+
+## 13. Swagger / OpenAPI Dokümantasyonu
+
+Swagger arayüzü, backend ekibinin endpoint'leri görünür kılmasını ve frontend entegrasyonunun hızlanmasını sağlar. Aşağıdaki adımlar `apps/api` projesi örnek alınarak hazırlanmıştır.
+
+### 13.1 Bağımlılıkların Yüklenmesi
+```bash
+npm install --save @nestjs/swagger swagger-ui-express
+# veya
+yarn add @nestjs/swagger swagger-ui-express
+```
+`class-transformer` ve `class-validator` zaten projede aktif olduğundan ekstra kurulum gerekmez.
+
+### 13.2 Bootstrap Entegrasyonu
+`main.ts` içerisinde Swagger kurulumunu global pipe'lar sonrasında ekleyin:
+```ts
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+const config = new DocumentBuilder()
+  .setTitle('LogisticsTMS API')
+  .setDescription('Çok kiracılı TMS platformu için REST API')
+  .setVersion('1.0')
+  .addBearerAuth(
+    { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+    'access-token',
+  )
+  .build();
+
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('docs', app, document, {
+  swaggerOptions: { persistAuthorization: true },
+});
+```
+`app.enableCors()` ve global prefix tanımları bu bloktan önce yapılmalıdır.
+
+### 13.3 Controller ve Endpoint Dekoratörleri
+Controller seviyesinde `@ApiTags('Orders')` ekleyerek gruplama yapın. Her endpoint için:
+```ts
+@ApiOperation({ summary: 'Yeni sipariş oluşturur' })
+@ApiResponse({ status: 201, type: OrderResponseDto })
+@ApiBearerAuth('access-token')
+```
+gibi decorator'larla işlevi ve response tipini açıkça belirtin. Rate limit veya özel hata dönüşleri için `@ApiTooManyRequestsResponse` vb. kullanılabilir.
+
+### 13.4 DTO Dokümantasyonu
+DTO alanlarını `@ApiProperty()` ile açıklayın:
+```ts
+export class CreateOrderDto {
+  @ApiProperty({ example: 'TR-2025-0001', description: 'İş emri numarası' })
+  orderNumber: string;
+
+  @ApiProperty({ example: 'İstanbul, Türkiye' })
+  origin: string;
+}
+```
+Opsiyonel alanlarda `@ApiPropertyOptional()` kullanın. Enum değerleri için `enum` parametresi sağlayın ki swagger otomatik olarak seçenekleri göstersin.
+
+### 13.5 Authentication Şeması
+JWT tabanlı kimlik doğrulama için `DocumentBuilder` içinde `addBearerAuth` tanımı yeterlidir. Guard kullanılan endpoint'lere `@ApiBearerAuth()` eklemeyi unutmayın. Kullanıcı adı/şifre ile login olan endpoint için `@ApiBody()` ile JSON yapısını örnekleyin.
+
+### 13.6 Çıktının Yayınlanması
+`SwaggerModule.setup('docs', ...)` sayesinde `/docs` altında arayüz gelir. Deployment ortamlarında temel auth veya IP kısıtlaması eklemek için `app.use(['/docs', '/docs-json'], basicAuthMiddleware)` gibi ekstra korumalar planlayın.
+
+### 13.7 CI Kontrolleri
+Swagger şemasını bir JSON dosyasına export edip (`SwaggerModule.createDocument`) repo içinde saklamak regresyon testlerinde değişiklikleri takip etmeyi kolaylaştırır. `npm run lint` ile decorator import'larının eksik kalmadığından emin olun.
+
+### 13.8 Frontend Entegrasyonu
+Frontend ekibi `docs-json` endpoint'ini kullanarak otomatik client üretebilir (`pnpm openapi-typescript`). Bu endpoint'i açmak için `SwaggerModule.setup` çağrısından sonra `SwaggerModule.createDocument` çıktısını `/docs-json` rotasında servis etmek yeterli.
+
+---

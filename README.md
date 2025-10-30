@@ -193,7 +193,7 @@ Servisleri başlattıktan sonra:
 - **Filtering:** Gelişmiş arama ve filtreleme eksik
 - **User Management UI:** Kullanıcı yönetim sayfası yok
 - **Token Refresh:** Refresh token mekanizması eksik
-- **API Documentation:** Swagger/OpenAPI dokümantasyonu yok
+- **API Documentation:** Swagger/OpenAPI http://localhost:3000/docs adresinde yayinda
 
 > 💡 **Not:** Tüm sorunlar ve çözüm planları [ROADMAP.md](./ROADMAP.md) dosyasında detaylı şekilde listelenmiştir.
 
