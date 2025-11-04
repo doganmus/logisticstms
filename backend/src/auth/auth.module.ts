@@ -9,10 +9,13 @@ import { jwtConstants } from './constants';
 import { User } from '../public-entities/user.entity';
 import { Tenant } from '../public-entities/tenant.entity';
 import { TenantModule } from '../tenant/tenant.module';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { EmailVerificationToken } from './entities/email-verification-token.entity';
+import { MailService } from '../common/services/mail.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Tenant], 'public'), // Uses the public connection
+    TypeOrmModule.forFeature([User, Tenant, PasswordResetToken, EmailVerificationToken], 'public'), // Uses the public connection
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -20,7 +23,7 @@ import { TenantModule } from '../tenant/tenant.module';
     }),
     TenantModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, MailService],
   controllers: [AuthController],
   exports: [JwtModule], // Export JwtModule so it can be used in TenantMiddleware
 })

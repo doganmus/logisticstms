@@ -11,8 +11,10 @@ export class TenantMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
-    let tenantId: string = 'public'; // Default to public
+    let tenantId = 'public'; // Default to public
     let userId: string | null = null;
+    let userRole: string | null = null;
+    let tenantUuid: string | null = null;
 
     if (authHeader) {
       const token = authHeader.split(' ')[1];
@@ -30,6 +32,12 @@ export class TenantMiddleware implements NestMiddleware {
           if (decoded && decoded.sub) {
             userId = decoded.sub;
           }
+          if (decoded && decoded.role) {
+            userRole = decoded.role;
+          }
+          if (decoded && decoded.tenantUuid) {
+            tenantUuid = decoded.tenantUuid;
+          }
         } catch (error) {
           // Token is invalid or expired
           // For middleware, we can either throw an error or let it pass with default tenant
@@ -45,6 +53,8 @@ export class TenantMiddleware implements NestMiddleware {
 
     (req as any).tenantId = tenantId;
     (req as any).userId = userId;
+    (req as any).userRole = userRole;
+    (req as any).tenantUuid = tenantUuid;
     next();
   }
 }

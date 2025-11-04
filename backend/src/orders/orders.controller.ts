@@ -1,20 +1,24 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   UseGuards,
   ValidationPipe,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { OrderStatus } from './order.entity';
+import { OrdersQueryDto } from './dto/orders-query.dto';
 
 @ApiTags('Orders')
 @ApiBearerAuth('access-token')
@@ -33,9 +37,28 @@ export class OrdersController {
 
   @Get()
   @ApiOperation({ summary: 'Tum siparisleri listeler' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Sayfa numarasi' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Sayfa basina kayit' })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['createdAt', 'orderNumber', 'status'],
+    description: 'Siralama alanı',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['ASC', 'DESC'],
+    description: 'Siralama yonu',
+  })
+  @ApiQuery({ name: 'status', required: false, enum: Object.values(OrderStatus) })
+  @ApiQuery({ name: 'supplierId', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'dateFrom', required: false })
+  @ApiQuery({ name: 'dateTo', required: false })
   @ApiResponse({ status: 200, description: 'Siparis listesi doner' })
-  findAll() {
-    return this.ordersService.findAll();
+  findAll(@Query() query: OrdersQueryDto) {
+    return this.ordersService.findAll(query);
   }
 
   @Get(':id')

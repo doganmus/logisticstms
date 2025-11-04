@@ -3,11 +3,13 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
+import { useConfirmDialog } from '../../context/ConfirmDialogContext';
 import Link from 'next/link';
 
 const DashboardPage = () => {
   const { isAuthenticated, logout } = useAuth();
+  const { confirm } = useConfirmDialog();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,8 +19,11 @@ const DashboardPage = () => {
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    // Or a loading spinner
-    return null;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" sx={{ mt: 6 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
@@ -32,7 +37,24 @@ const DashboardPage = () => {
             View Orders
           </Button>
         </Link>
-        <Button variant="outlined" onClick={logout}>
+        <Link href="/dashboard/users" passHref>
+          <Button variant="outlined" sx={{ mr: 2 }}>
+            Manage Users
+          </Button>
+        </Link>
+        <Button
+          variant="outlined"
+          onClick={async () => {
+            const confirmed = await confirm({
+              title: 'Oturumu kapat',
+              description: 'Çıkış yapmak istediğinize emin misiniz?',
+              confirmLabel: 'Çıkış yap',
+            });
+            if (confirmed) {
+              logout();
+            }
+          }}
+        >
           Logout
         </Button>
       </Box>

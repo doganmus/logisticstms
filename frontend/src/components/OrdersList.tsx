@@ -1,7 +1,18 @@
 'use client';
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Chip,
+  TableSortLabel,
+} from '@mui/material';
 
 // Keep the interface consistent
 interface Order {
@@ -10,6 +21,7 @@ interface Order {
   origin: string;
   destination: string;
   status: string;
+  createdAt: string;
   supplier: {
     id: string;
     name: string;
@@ -19,19 +31,67 @@ interface Order {
 interface OrdersListProps {
   orders: Order[];
   onAssign: (order: Order) => void; // Callback to open the assignment modal
+  sortBy: 'createdAt' | 'orderNumber' | 'status';
+  sortOrder: 'ASC' | 'DESC';
+  onSortChange: (field: OrdersListProps['sortBy'], order: 'ASC' | 'DESC') => void;
 }
 
-const OrdersList: React.FC<OrdersListProps> = ({ orders, onAssign }) => {
+const OrdersList: React.FC<OrdersListProps> = ({ orders, onAssign, sortBy, sortOrder, onSortChange }) => {
+  const handleSort = (field: OrdersListProps['sortBy']) => {
+    const isAsc = sortBy === field && sortOrder === 'ASC';
+    onSortChange(field, isAsc ? 'DESC' : 'ASC');
+  };
+
+  const statusColor = (status: string): 'default' | 'success' | 'warning' | 'info' | 'error' => {
+    switch (status) {
+      case 'delivered':
+        return 'success';
+      case 'in_transit':
+        return 'info';
+      case 'canceled':
+        return 'error';
+      case 'assigned':
+        return 'warning';
+      default:
+        return 'default';
+    }
+  };
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="orders table">
         <TableHead>
           <TableRow>
-            <TableCell>Order Number</TableCell>
+            <TableCell sortDirection={sortBy === 'orderNumber' ? sortOrder.toLowerCase() as 'asc' | 'desc' : false}>
+              <TableSortLabel
+                active={sortBy === 'orderNumber'}
+                direction={sortBy === 'orderNumber' ? (sortOrder === 'ASC' ? 'asc' : 'desc') : 'asc'}
+                onClick={() => handleSort('orderNumber')}
+              >
+                Order Number
+              </TableSortLabel>
+            </TableCell>
             <TableCell>Origin</TableCell>
             <TableCell>Destination</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell sortDirection={sortBy === 'status' ? sortOrder.toLowerCase() as 'asc' | 'desc' : false}>
+              <TableSortLabel
+                active={sortBy === 'status'}
+                direction={sortBy === 'status' ? (sortOrder === 'ASC' ? 'asc' : 'desc') : 'asc'}
+                onClick={() => handleSort('status')}
+              >
+                Status
+              </TableSortLabel>
+            </TableCell>
             <TableCell>Supplier</TableCell>
+            <TableCell sortDirection={sortBy === 'createdAt' ? sortOrder.toLowerCase() as 'asc' | 'desc' : false}>
+              <TableSortLabel
+                active={sortBy === 'createdAt'}
+                direction={sortBy === 'createdAt' ? (sortOrder === 'ASC' ? 'asc' : 'desc') : 'desc'}
+                onClick={() => handleSort('createdAt')}
+              >
+                Created At
+              </TableSortLabel>
+            </TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -42,9 +102,10 @@ const OrdersList: React.FC<OrdersListProps> = ({ orders, onAssign }) => {
               <TableCell>{order.origin}</TableCell>
               <TableCell>{order.destination}</TableCell>
               <TableCell>
-                <Chip label={order.status} color={order.status === 'ASSIGNED' ? 'success' : 'default'} />
+                <Chip label={order.status.toUpperCase()} color={statusColor(order.status)} size="small" />
               </TableCell>
               <TableCell>{order.supplier ? order.supplier.name : 'N/A'}</TableCell>
+              <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
               <TableCell>
                 <Button 
                   variant="outlined" 

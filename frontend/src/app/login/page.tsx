@@ -9,6 +9,7 @@ import {
   Button,
   Typography,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
@@ -24,6 +25,8 @@ const useLoginErrorMessage = () => {
             return 'E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edin.';
           case 429:
             return 'Çok fazla deneme yaptınız. Lütfen bir dakika sonra tekrar deneyin.';
+          case 403:
+            return 'Hesabınız henüz doğrulanmadı. Lütfen e-postanızdaki doğrulama bağlantısını kullanın.';
           case 500:
             return 'Sunucuda beklenmeyen bir hata oluştu. Biraz sonra tekrar deneyin.';
           default:
@@ -128,6 +131,7 @@ const LoginPage = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
+            startIcon={loading ? <CircularProgress size={18} /> : null}
           >
             {loading ? 'Signing In...' : 'Sign In'}
           </Button>

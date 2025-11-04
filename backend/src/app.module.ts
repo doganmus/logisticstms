@@ -21,6 +21,8 @@ import { DriversModule } from './drivers/drivers.module';
 import { Driver } from './drivers/driver.entity';
 import { ReportsModule } from './reports/reports.module';
 import { Supplier } from './suppliers/supplier.entity';
+import { RolesGuard } from './common/guards/roles.guard';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -97,6 +99,7 @@ import { Supplier } from './suppliers/supplier.entity';
     VehiclesModule,
     DriversModule,
     ReportsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [
@@ -104,6 +107,10 @@ import { Supplier } from './suppliers/supplier.entity';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

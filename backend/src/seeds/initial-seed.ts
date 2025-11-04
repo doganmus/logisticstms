@@ -75,6 +75,9 @@ async function runSeed() {
       name: seedAdminName,
       tenantId: tenant.id,
       tenant,
+      role: 'admin',
+      isEmailVerified: true,
+      emailVerifiedAt: new Date(),
     });
     await userRepository.save(adminUser);
     console.log(`Created admin user ${seedAdminEmail}`);

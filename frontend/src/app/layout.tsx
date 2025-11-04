@@ -5,6 +5,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from '../context/AuthContext';
 import { NotificationProvider } from '../context/NotificationContext';
+import { ConfirmDialogProvider } from '../context/ConfirmDialogContext';
 import { AppErrorBoundary } from '../components/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,9 +27,11 @@ export default function RootLayout({
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
           <NotificationProvider>
-            <AppErrorBoundary>
-              <AuthProvider>{children}</AuthProvider>
-            </AppErrorBoundary>
+            <ConfirmDialogProvider>
+              <AppErrorBoundary>
+                <AuthProvider>{children}</AuthProvider>
+              </AppErrorBoundary>
+            </ConfirmDialogProvider>
           </NotificationProvider>
         </ThemeProvider>
       </body>

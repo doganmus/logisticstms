@@ -17,7 +17,9 @@ Bu doküman, TMS SaaS platformunun **Temel Plan (MVP)** özellikleri için gerek
   "tenantId": "tenant-uuid-456",
   "email": "admin@firma.com",
   "name": "Ahmet Yılmaz",
-  "role": "admin" // admin, operator
+"role": "admin", // admin, operator
+"isEmailVerified": true,
+"emailVerifiedAt": "2026-03-03T09:30:00.000Z"
 }
 ```
 
@@ -165,25 +167,52 @@ Setup wizard için özel endpoint'ler. Bu endpoint'ler setup tamamlanana kadar a
 
 - **`POST /auth/register`**: Yeni bir abone (tenant) ve ilk admin kullanıcısını oluşturur.
 - **`POST /auth/login`**: Kullanıcı girişi yapar ve JWT döndürür.
+- **`POST /auth/forgot-password`**: Kullanıcının e-postasına sıfırlama tokenı üretir.
+  - **Request Body:** `{ "email": "user@example.com" }`
+- **`POST /auth/reset-password`**: Geçerli token ile yeni bir parola belirler.
+  - **Request Body:** `{ "token": "uuid", "password": "YeniParola123!" }`
+- **`POST /auth/verify-email`**: Doğrulama tokenını işleyerek kullanıcıyı aktif eder.
+  - **Request Body:** `{ "token": "uuid" }`
+- **`POST /auth/resend-verification`**: Doğrulama bağlantısını yeniden gönderir.
+  - **Request Body:** `{ "email": "user@example.com" }`
 
 ### Kullanıcılar (`/users`) - *JWT Korumalı, Admin Yetkisi Gerekli*
 
 - **`GET /users`**: Aboneye ait tüm kullanıcıları listeler.
-- **`PATCH /users/{id}`**: Bir kullanıcının rolünü günceller.
+- **`POST /users`**: Yeni bir kullanıcı oluşturur, rol ve isteğe bağlı geçici parola atar.
   - **Request Body:**
     ```json
     {
-      "role": "operator"
+      "name": "Operatör Kullanıcı",
+      "email": "operator@firma.com",
+      "role": "operator",
+      "temporaryPassword": "GeciciParola123!"
     }
     ```
+- **`PATCH /users/{id}`**: Bir kullanıcının isim/e-posta/rol bilgisini günceller. Operatörler yalnızca kendi profillerini düzenleyebilir.
+- **`DELETE /users/{id}`**: Bir kullanıcıyı siler.
+- Tüm kullanıcı oluşturma/güncelleme işlemlerinde doğrulama maili otomatik gönderilir.
+- **`POST /users/{id}/resend-verification`**: Kullanıcının doğrulama e-postasını yeniden gönderir (admin veya ilgili kullanıcı).
 
 ### Siparişler (`/orders`) - *JWT Korumalı*
 
 - **`POST /orders`**: Yeni bir sipariş oluşturur.
-- **`GET /orders`**: Aboneye ait tüm siparişleri listeler.
+- **`GET /orders`**: Aboneye ait tüm siparişleri sayfalı olarak listeler.
+  - **Query Parametreleri:** `page`, `limit`, `sortBy`, `sortOrder`, `status`, `supplierId`, `search`, `dateFrom`, `dateTo`
+  - **Response:** `{ "data": Order[], "meta": { "totalItems": 120, "itemCount": 20, "itemsPerPage": 20, "totalPages": 6, "currentPage": 3 } }`
 - **`GET /orders/{id}`**: Belirli bir siparişin detaylarını getirir.
 - **`PATCH /orders/{id}`**: Bir siparişi kısmen günceller.
 - **`DELETE /orders/{id}`**: Bir siparişi siler.
+
+### Tedarikçiler (`/suppliers`) - *JWT Korumalı*
+
+- **`POST /suppliers`**: Yeni bir tedarikçi kaydı oluşturur.
+- **`GET /suppliers`**: Aboneye ait tüm tedarikçileri listeler.
+  - **Query Parametreleri:** `page`, `limit`, `search`
+  - **Response:** `{ "data": Supplier[], "meta": { "totalItems": 12, "itemCount": 10, "itemsPerPage": 10, "totalPages": 2, "currentPage": 1 } }`
+- **`GET /suppliers/{id}`**: Belirli bir tedarikçinin detaylarını getirir.
+- **`PATCH /suppliers/{id}`**: Bir tedarikçiyi kısmen günceller.
+- **`DELETE /suppliers/{id}`**: Bir tedarikçiyi siler.
 
 ### Araçlar (`/vehicles`) - *JWT Korumalı*
 
@@ -404,12 +433,11 @@ Liste endpoint'leri pagination desteği sunar:
     { "id": "2", "orderNumber": "ORD-002", ... }
   ],
   "meta": {
-    "page": 1,
-    "limit": 10,
     "totalItems": 47,
+    "itemCount": 10,
+    "itemsPerPage": 10,
     "totalPages": 5,
-    "hasNextPage": true,
-    "hasPreviousPage": false
+    "currentPage": 1
   }
 }
 ```
@@ -477,6 +505,8 @@ GET /orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
+> ℹ️ **Not:** Email adresi doğrulanmamış hesaplar `POST /auth/login` çağrısında `403 Forbidden` hatası döner.
+
 ### Token Expiration
 - **Access Token:** 24 saat
 - Token süresi dolduğunda 401 Unauthorized döner
@@ -485,19 +515,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ### Role-Based Access Control (RBAC)
 
 #### Rol Tanımları
-- **Admin:** Tüm kaynaklara tam erişim
+- **Admin:** Tüm kaynaklara tam erişim (kullanıcı yönetimi dahil)
 - **Operator:** Operasyonel işlemler (siparişler, araçlar, şoförler)
-- **Viewer:** Sadece görüntüleme yetkisi
 
 #### Endpoint Yetkileri
-| Endpoint | Admin | Operator | Viewer |
-|----------|-------|----------|--------|
-| POST /orders | ✅ | ✅ | ❌ |
-| GET /orders | ✅ | ✅ | ✅ |
-| PATCH /orders/:id | ✅ | ✅ | ❌ |
-| DELETE /orders/:id | ✅ | ❌ | ❌ |
-| POST /users | ✅ | ❌ | ❌ |
-| PATCH /users/:id | ✅ | ❌ | ❌ |
+| Endpoint | Admin | Operator |
+|----------|-------|----------|
+| POST /orders | ✅ | ✅ |
+| GET /orders | ✅ | ✅ |
+| PATCH /orders/:id | ✅ | ✅ |
+| DELETE /orders/:id | ✅ | ❌ |
+| POST /users | ✅ | ❌ |
+| PATCH /users/:id | ✅ | ❌ |
+| DELETE /users/:id | ✅ | ❌ |
 
 ---
 

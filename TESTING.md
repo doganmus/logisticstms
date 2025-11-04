@@ -37,7 +37,7 @@ Bu doküman, TMS SaaS platformunun test stratejisini, test türlerini ve örnekl
 
 | Katman | Hedef Coverage | Durum |
 |--------|----------------|-------|
-| Unit Tests | 80% | 🚧 0% |
+| Unit Tests | 80% | 🚧 5% (UsersService başlatıldı) |
 | Integration Tests | 70% | 🚧 0% |
 | E2E Tests | Kritik flow'lar | 🚧 0% |
 
@@ -89,6 +89,9 @@ npm run test:e2e      # E2E tests
 ---
 
 ### Unit Test Örnekleri
+
+- Güncel örnek: `src/users/users.service.spec.ts` (kullanıcı oluşturma + doğrulama e-postası tetikleme)
+- Yeni örnek: `src/orders/orders.service.spec.ts` (listeleme filtreleri ve sıralama)
 
 #### Service Test
 

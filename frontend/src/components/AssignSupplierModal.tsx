@@ -29,7 +29,7 @@ interface AssignSupplierModalProps {
   open: boolean;
   onClose: () => void;
   order: Order | null;
-  onSuccess: () => void;
+  onSuccess: (payload: { orderId: string; supplier: Supplier }) => void;
 }
 
 const style = {
@@ -37,11 +37,18 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: {
+    xs: '90vw',
+    sm: 420,
+  },
+  maxWidth: '95vw',
   bgcolor: 'background.paper',
   borderRadius: 2,
   boxShadow: 24,
-  p: 4,
+  p: {
+    xs: 3,
+    sm: 4,
+  },
 };
 
 const AssignSupplierModal: React.FC<AssignSupplierModalProps> = ({
@@ -50,7 +57,7 @@ const AssignSupplierModal: React.FC<AssignSupplierModalProps> = ({
   order,
   onSuccess,
 }) => {
-  const { notifyError } = useNotification();
+  const { notifyError, notifyInfo } = useNotification();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,8 +69,13 @@ const AssignSupplierModal: React.FC<AssignSupplierModalProps> = ({
         try {
           setLoading(true);
           setError('');
-          const response = await api.get('/suppliers');
-          setSuppliers(response.data);
+          const response = await api.get('/suppliers', { params: { page: 1, limit: 100 } });
+          const list = response.data.data ?? response.data;
+          setSuppliers(
+            Array.isArray(list)
+              ? list.map((supplier: { id: string; name: string }) => ({ id: supplier.id, name: supplier.name }))
+              : [],
+          );
         } catch (err) {
           const message =
             'Tedarikçi listesi yüklenemedi. Lütfen tekrar deneyin.';
@@ -92,7 +104,9 @@ const AssignSupplierModal: React.FC<AssignSupplierModalProps> = ({
       await api.patch(`/orders/${order.id}`, {
         supplierId: selectedSupplier,
       });
-      onSuccess();
+      const supplier = suppliers.find((item) => item.id === selectedSupplier);
+      notifyInfo('Tedarikçi ataması kaydedildi.');
+      onSuccess({ orderId: order.id, supplier: supplier ?? { id: selectedSupplier, name: 'Seçili Tedarikçi' } });
       onClose();
     } catch (err) {
       const message =

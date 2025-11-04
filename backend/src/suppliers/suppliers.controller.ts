@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SuppliersService } from './suppliers.service';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
+import { SuppliersQueryDto } from './dto/suppliers-query.dto';
 
 @ApiTags('Suppliers')
 @Controller({ path: 'suppliers', version: '1' })
@@ -18,9 +19,12 @@ export class SuppliersController {
 
   @Get()
   @ApiOperation({ summary: 'Tum tedarikcileri listeler' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false })
   @ApiResponse({ status: 200, description: 'Tedarikci listesi doner' })
-  findAll() {
-    return this.suppliersService.findAll();
+  findAll(@Query() query: SuppliersQueryDto) {
+    return this.suppliersService.findAll(query);
   }
 
   @Get(':id')

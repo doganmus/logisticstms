@@ -2,7 +2,7 @@
 
 Bu doküman, TMS SaaS platformunda kullanılan tüm environment variables'ların detaylı açıklamasını içerir.
 
-**Son Güncelleme:** 23 Ekim 2025
+**Son Güncelleme:** 3 Mart 2026
 
 ---
 
@@ -198,6 +198,56 @@ NODE_ENV=production
 - Error handling (stack trace görünürlüğü)
 - Logging seviyesi
 - Database synchronize modu
+
+---
+
+### Email Gönderimi
+
+Bu değişkenler opsiyoneldir. Tanımlanmadığı durumda sistem e-posta içeriğini loglar.
+
+#### `SMTP_HOST`
+**Tip:** String  
+**Açıklama:** SMTP sunucu adresi.
+
+#### `SMTP_PORT`
+**Tip:** Number  
+**Varsayılan:** `587`
+
+#### `SMTP_SECURE`
+**Tip:** Boolean (`true` | `false`)  
+**Varsayılan:** `false`  
+**Açıklama:** TLS üzerinden bağlantı kurulması gerekir mi?
+
+#### `SMTP_USERNAME` & `SMTP_PASSWORD`
+**Tip:** String  
+**Açıklama:** SMTP kimlik bilgileri. Basic auth gerektirmeyen bir yapılandırmada boş bırakılabilir.
+
+#### `SMTP_FROM`
+**Tip:** String  
+**Varsayılan:** `LogisticsTMS <no-reply@logisticstms.local>`  
+**Açıklama:** Gönderici adı ve adresi.
+
+```bash
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_SECURE=false
+SMTP_USERNAME=your-user
+SMTP_PASSWORD=your-pass
+SMTP_FROM="LogisticsTMS <no-reply@logisticstms.local>"
+```
+
+> 💡 `SMTP_HOST` tanımlı değilse, backend gönderilecek mailleri log çıktısına yazdırır.
+
+---
+
+#### `APP_URL`
+**Tip:** String  
+**Varsayılan:** `http://localhost:3001`  
+**Açıklama:** Frontend taban adresi. Email doğrulama ve şifre sıfırlama linkleri bu taban üzerinden üretilir.
+
+```bash
+APP_URL=http://localhost:3001
+```
 - CORS politikası
 - Cache stratejisi
 

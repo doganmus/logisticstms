@@ -8,7 +8,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Snackbar, Alert, AlertColor } from '@mui/material';
+import { Snackbar, Alert, AlertColor, Slide } from '@mui/material';
+import type { TransitionProps } from '@mui/material/transitions';
 
 type NotificationPayload = {
   message: string;
@@ -27,6 +28,10 @@ interface NotificationContextValue {
 
 const NotificationContext = createContext<NotificationContextValue | undefined>(
   undefined,
+);
+
+const Transition = (props: TransitionProps & { children: React.ReactElement }) => (
+  <Slide {...props} direction="up" />
 );
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
@@ -69,6 +74,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         autoHideDuration={autoHideDuration}
         onClose={close}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        TransitionComponent={Transition}
       >
         <Alert onClose={close} severity={severity} variant="filled" sx={{ width: '100%' }}>
           {message}

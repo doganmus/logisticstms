@@ -3,6 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Supplier } from './supplier.entity';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { TenantConnectionService } from '../tenant/tenant-connection.service';
+import { PaginationQueryDto, SortOrder } from '../common/dto/pagination-query.dto';
+import { SuppliersQueryDto } from './dto/suppliers-query.dto';
 
 type TenantSupplierRow = {
   id: string;
@@ -48,19 +50,60 @@ export class SuppliersService {
     };
   }
 
-  async findAll(): Promise<Supplier[]> {
+  async findAll(
+    query?: SuppliersQueryDto,
+  ): Promise<{ data: Supplier[]; meta?: any }> {
     // For development, use raw query to work around tenant schema metadata issues
     const tenantId = this.tenantConnectionService.getTenantId();
     if (tenantId === 'public') {
       const suppliersRepository = await this.tenantConnectionService.getRepository(Supplier);
-      return suppliersRepository.find();
+      const qb = suppliersRepository.createQueryBuilder('supplier');
+      if (query?.search) {
+        qb.where(
+          '(supplier.name ILIKE :search OR supplier."contactName" ILIKE :search OR supplier."contactEmail" ILIKE :search)',
+          { search: `%${query.search}%` },
+        );
+      }
+      qb.orderBy('supplier.createdAt', query?.sortOrder ?? SortOrder.DESC);
+      if (query) {
+        qb.skip((query.page - 1) * query.limit).take(query.limit);
+      }
+      const [data, total] = await qb.getManyAndCount();
+      return {
+        data,
+        meta: query
+          ? {
+              totalItems: total,
+              itemCount: data.length,
+              itemsPerPage: query.limit,
+              totalPages: Math.ceil(total / query.limit) || 1,
+              currentPage: query.page,
+            }
+          : undefined,
+      };
     }
 
     // Use raw query for tenant schemas
-    const result = await this.tenantConnectionService.query<TenantSupplierRow[]>(
-      `SELECT * FROM "${tenantId}"."suppliers" ORDER BY "createdAt" DESC`,
+    const params: any[] = [];
+    const where: string[] = [];
+    let idx = 1;
+
+    if (query?.search) {
+      where.push(`(name ILIKE $${idx} OR "contactName" ILIKE $${idx} OR "contactEmail" ILIKE $${idx})`);
+      params.push(`%${query.search}%`);
+      idx += 1;
+    }
+
+    const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const orderClause = `ORDER BY "createdAt" ${query?.sortOrder ?? SortOrder.DESC}`;
+    const paginationClause = query ? `LIMIT ${query.limit} OFFSET ${(query.page - 1) * query.limit}` : '';
+
+    const dataRows = await this.tenantConnectionService.query<TenantSupplierRow[]>(
+      `SELECT * FROM "${tenantId}"."suppliers" ${whereClause} ${orderClause} ${paginationClause}`,
+      params,
     );
-    return result.map((row) => ({
+
+    const data = dataRows.map((row) => ({
       id: row.id,
       name: row.name,
       contactName: row.contactName,
@@ -70,6 +113,28 @@ export class SuppliersService {
       updatedAt: row.updatedAt,
       vehicles: [], // Not loaded in raw query
     }));
+
+    if (!query) {
+      return { data };
+    }
+
+    const countRows = await this.tenantConnectionService.query<{ count: string }[]>(
+      `SELECT COUNT(*)::int as count FROM "${tenantId}"."suppliers" ${whereClause}`,
+      params,
+    );
+
+    const total = Number(countRows[0]?.count ?? data.length);
+
+    return {
+      data,
+      meta: {
+        totalItems: total,
+        itemCount: data.length,
+        itemsPerPage: query.limit,
+        totalPages: Math.ceil(total / query.limit) || 1,
+        currentPage: query.page,
+      },
+    };
   }
 
   async findOne(id: string): Promise<Supplier> {

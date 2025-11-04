@@ -40,11 +40,12 @@ Bu proje, küçük, orta ve büyük ölçekli lojistik ve taşımacılık firmal
 - ✅ **Şoför Yönetimi (Drivers):** Şoför kayıt ve yönetim sistemi
 - ✅ **Tedarikçi Yönetimi (Suppliers):** Harici taşıyıcı firma yönetimi
 - ✅ **Temel Raporlama (Reports):** Aylık sevkiyat raporları
+- ✅ **E-posta Akışları:** Email doğrulama ve şifre sıfırlama token yönetimi
 
 #### Frontend
 - ✅ **Login/Register Sayfaları:** Kullanıcı girişi ve abone kaydı
 - ✅ **Dashboard:** Ana kontrol paneli
-- ✅ **Sipariş Listesi:** Siparişleri görüntüleme ve yönetme
+- ✅ **Sipariş Listesi:** Siparişleri görüntüleme, filtreleme (status/supplier/date/search) ve sıralama
 - ✅ **Tedarikçi Atama:** Siparişlere tedarikçi atama özelliği
 - ✅ **Material-UI Entegrasyonu:** Modern ve responsive UI bileşenleri
 
